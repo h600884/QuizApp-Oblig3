@@ -11,7 +11,6 @@ import androidx.room.PrimaryKey;
 public class ImageEntity {
 
     @PrimaryKey(autoGenerate = true)
-    @NonNull
     private int id;
 
     private String imageDescription;

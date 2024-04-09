@@ -1,6 +1,7 @@
 package no.hvl.dat153.quizapp_oblig3;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -8,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity {
 
+    private ImageRepository imageRepository;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -28,6 +30,19 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 openQuizActivity();
+            }
+        });
+
+        imageRepository = new ImageRepository(getApplication());
+
+        imageRepository.deleteAll();
+
+        imageRepository.getAllImages().observe(this, images -> {
+            if(images.isEmpty()) {
+                    // Legg til standardbilder
+                    imageRepository.insert(new ImageEntity("Beer mug", Uri.parse("android.resource://" + getPackageName() + "/" + R.drawable.beer_image)));
+                    imageRepository.insert(new ImageEntity("Sheep", Uri.parse("android.resource://" + getPackageName() + "/" + R.drawable.sheep_image)));
+                    imageRepository.insert(new ImageEntity("Tree", Uri.parse("android.resource://" + getPackageName() + "/" + R.drawable.tree_image)));
             }
         });
     }

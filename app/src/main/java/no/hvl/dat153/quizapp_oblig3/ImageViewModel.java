@@ -40,4 +40,8 @@ public class ImageViewModel extends AndroidViewModel {
         return imageRepository.getAllImageAsc();
     }
 
+    public void deleteAll() {
+        imageRepository.deleteAll();
+    }
+
 }

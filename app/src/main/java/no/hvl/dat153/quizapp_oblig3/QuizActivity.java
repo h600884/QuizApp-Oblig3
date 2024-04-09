@@ -1,7 +1,6 @@
 package no.hvl.dat153.quizapp_oblig3;
 
 import android.content.DialogInterface;
-import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -10,6 +9,8 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -18,9 +19,9 @@ import java.util.Random;
 
 public class QuizActivity extends AppCompatActivity {
 
-    private ImageView dogImageView;
+    private ImageView quizImageView;
     private TextView scoreTextView;
-    private TextView correctAnswerOrNotTextView;
+    private TextView checkAnswerTextView;
     private Button option1Button;
     private Button option2Button;
     private Button option3Button;
@@ -28,32 +29,33 @@ public class QuizActivity extends AppCompatActivity {
     private List<ImageEntity> imageList;
     private int currentQuestionIndex;
     private int score;
-    private ImageAdapter imageAdapter;
-
+    private ImageViewModel imageViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_quiz);
 
-        dogImageView = findViewById(R.id.quizDogImage);
+        quizImageView = findViewById(R.id.quizImage);
         scoreTextView = findViewById(R.id.scoreText);
-        correctAnswerOrNotTextView = findViewById(R.id.correctAnswerOrNot);
-        option1Button = findViewById(R.id.button);
+        checkAnswerTextView = findViewById(R.id.checkAnswer);
+        option1Button = findViewById(R.id.button1);
         option2Button = findViewById(R.id.button2);
         option3Button = findViewById(R.id.button3);
 
-        // Opprett en liste med bildedata
-        imageList = new ArrayList<>();
-        // Fyll inn bildedataen (du kan erstatte dette med din egen logikk for å hente bildedata)
-        addSampleImages();
+        // Opprett ViewModel
+        imageViewModel = new ViewModelProvider(this).get(ImageViewModel.class);
 
-        // Opprett adapteren og koble den til RecyclerView
-        imageAdapter = new ImageAdapter(this, imageList);
-
-        // Sett opp første spørsmål
-        currentQuestionIndex = 0;
-        setQuestion();
+        // Lytt etter endringer i listen med bilder fra ViewModel
+        imageViewModel.getAllImages().observe(this, new Observer<List<ImageEntity>>() {
+            @Override
+            public void onChanged(List<ImageEntity> images) {
+                imageList = images;
+                // Sett opp første spørsmål når bildene er lastet
+                currentQuestionIndex = 0;
+                setQuestion();
+            }
+        });
 
         // Lyttere for valgknapper
         option1Button.setOnClickListener(new View.OnClickListener() {
@@ -78,17 +80,15 @@ public class QuizActivity extends AppCompatActivity {
         });
     }
 
-    private void addSampleImages() {
-        // Legg til eksempelbilder (du kan erstatte dette med din egen logikk for å hente bildedata)
-        imageList.add(new ImageEntity("Beer mug", Uri.parse("android.resource://" + getPackageName() + "/" + R.drawable.beer_image)));
-        imageList.add(new ImageEntity("Sheep", Uri.parse("android.resource://" + getPackageName() + "/" + R.drawable.sheep_image)));
-        imageList.add(new ImageEntity("Tree", Uri.parse("android.resource://" + getPackageName() + "/" + R.drawable.tree_image)));
-    }
-
     private void setQuestion() {
+        // Sjekk om bildelisten er tom
+        if (imageList == null || imageList.isEmpty()) {
+            return;
+        }
+
         // Vis bildet for nåværende spørsmål
         ImageEntity currentImage = imageList.get(currentQuestionIndex);
-        dogImageView.setImageURI(currentImage.getImageUri());
+        quizImageView.setImageURI(currentImage.getImageUri());
 
         // Sett alternativene tilfeldig
         List<String> options = new ArrayList<>();
@@ -113,9 +113,9 @@ public class QuizActivity extends AppCompatActivity {
         String correctAnswer = imageList.get(currentQuestionIndex).getImageDescription();
         if (selectedAnswer.equals(correctAnswer)) {
             score++;
-            correctAnswerOrNotTextView.setText("Correct!");
+            checkAnswerTextView.setText("Correct!");
         } else {
-            correctAnswerOrNotTextView.setText("Incorrect. Correct answer is: " + correctAnswer);
+            checkAnswerTextView.setText("Incorrect. Correct answer is: " + correctAnswer);
         }
 
         // Oppdater poengsummen

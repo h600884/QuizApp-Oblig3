@@ -18,6 +18,10 @@ public class ImageRepository {
         images = imageDao.getAllImages();
     }
 
+    void deleteAll() {
+        ImageDatabase.databaseWriteExecutor.execute(() -> imageDao.deleteAll());
+    }
+
     LiveData<List<ImageEntity>> getAllImages() {
         return images;
     }

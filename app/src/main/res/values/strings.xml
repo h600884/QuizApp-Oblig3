@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name">QuizApp-Oblig3</string>
-    <string name="sortButtonText"> Sort </string>
     <string name="addButtonText"> Add an image </string>
     <string name="image_name"> Image description </string>
     <string name="yourScore" />
@@ -8,4 +7,6 @@
     <string name="option1" />
     <string name="option2">\n</string>
     <string name="option3" />
+    <string name="sortUnalphabeticalButtonText"> Sort unalphabetical </string>
+    <string name="sortAlphabeticalButtonText"> Sort alphabetical </string>
 </resources>

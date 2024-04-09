@@ -1,18 +1,25 @@
 package no.hvl.dat153.quizapp_oblig3;
 
+import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 public class GalleryActivity extends AppCompatActivity {
@@ -21,15 +28,57 @@ public class GalleryActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private ImageAdapter imageAdapter;
     private List<ImageEntity> imageList;
+    private ImageViewModel imageViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_gallery);
-
+        // Endrer layouten ut i fra rotasjonen på telefonen
+        if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE){
+            setContentView(R.layout.activity_gallery_landscape);
+        } else {
+            setContentView(R.layout.activity_gallery);
+        }
         // Initialiser RecyclerView
         recyclerView = findViewById(R.id.recycler_view_gallery);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        pickImageLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
+
+            @SuppressLint("WrongConstant")
+            @Override
+            public void onActivityResult(ActivityResult result) {
+                if (result.getResultCode() == Activity.RESULT_OK) {
+                    Intent intent = result.getData();
+
+                    if (intent != null) {
+
+                        Uri selectedImageUri = intent.getData();
+                        if (selectedImageUri != null) {
+                            int takeFlags = intent.getFlags() & (Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+                            getContentResolver().takePersistableUriPermission(selectedImageUri, takeFlags);
+                            EditText editText = findViewById(R.id.textinput);
+                            String imageText = editText.getText().toString();
+
+                            ImageEntity image = new ImageEntity(imageText, selectedImageUri);
+                            imageViewModel.insert(image);
+
+                        }
+                    }
+                }
+            }
+        });
+        // Opprett ImageViewModel
+        imageViewModel = new ViewModelProvider(this).get(ImageViewModel.class);
+
+        // Observer for å oppdatere imageList når databasen endres
+        imageViewModel.getAllImages().observe(this, images -> {
+            if (images != null) {
+                imageList.clear(); // Fjern eksisterende bilder fra imageList
+                imageList.addAll(images); // Legg til alle bildene fra databasen i imageList
+                imageAdapter.notifyDataSetChanged(); // Oppdater RecyclerView
+            }
+        });
 
         // Opprett en tom liste for bilder
         imageList = new ArrayList<>();
@@ -38,41 +87,39 @@ public class GalleryActivity extends AppCompatActivity {
         imageAdapter = new ImageAdapter(this, imageList);
         recyclerView.setAdapter(imageAdapter);
 
-        // Legg til eksempelbilder (du kan erstatte dette med din egen logikk for å legge til bilder)
-        addSampleImages();
 
-        // Legg til funksjonalitet for å legge til nye oppføringer når brukeren trykker på "Add" -knappen
+        // Legg til bilder
         Button addButton = findViewById(R.id.addbutton);
         addButton.setOnClickListener(v -> {
-
             Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
             intent.addCategory(Intent.CATEGORY_OPENABLE);
             intent.setType("image/*");
             pickImageLauncher.launch(intent);
         });
 
-        // Legg til funksjonalitet for å sortere oppføringene når brukeren trykker på "Sort" -knappen
-        Button sortButton = findViewById(R.id.sortbutton);
-        sortButton.setOnClickListener(new View.OnClickListener() {
+        // Sortere listen med bildene etter alfabetisk-rekkefølge
+        Button sortAlphabeticalButton = findViewById(R.id.sortalphabeticalbutton);
+        sortAlphabeticalButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Sorter oppføringene
-                Collections.sort(imageList, Comparator.comparing(ImageEntity::getImageDescription));
+                // Sorter bildene
+                Collections.sort(imageList, (o1, o2) -> o1.getImageDescription().compareToIgnoreCase(o2.getImageDescription()));
                 // Oppdater RecyclerView etter sorteringen
                 imageAdapter.notifyDataSetChanged();
             }
         });
+
+        // Sortere listen med bildene etter motsatt alfabetisk-rekkefølge
+        Button sortUnalphabeticalButton = findViewById(R.id.sortunalphabeticalbutton);
+        sortUnalphabeticalButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Sorter bildene
+                Collections.sort(imageList, (o1, o2) -> o2.getImageDescription().compareToIgnoreCase(o1.getImageDescription()));
+                // Oppdater RecyclerView etter sorteringen
+                imageAdapter.notifyDataSetChanged();
+            }
+        });
+
     }
-
-    private void addSampleImages() {
-        // Legg til eksempelbilder (du kan erstatte dette med din egen logikk for å legge til bilder)
-        imageList.add(new ImageEntity("Beer mug", Uri.parse("android.resource://" + getPackageName() + "/" + R.drawable.beer_image)));
-        imageList.add(new ImageEntity("Sheep", Uri.parse("android.resource://" + getPackageName() + "/" + R.drawable.sheep_image)));
-        imageList.add(new ImageEntity("Tree", Uri.parse("android.resource://" + getPackageName() + "/" + R.drawable.tree_image)));
-
-        // Oppdater RecyclerView etter å ha lagt til nye oppføringer
-        imageAdapter.notifyDataSetChanged();
-    }
-
 }
-
