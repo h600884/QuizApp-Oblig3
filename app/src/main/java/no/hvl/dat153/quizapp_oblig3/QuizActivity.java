@@ -81,7 +81,7 @@ public class QuizActivity extends AppCompatActivity {
     }
 
     private void setQuestion() {
-        // Sjekk om bildelisten er tom
+        // Sjekk om bildelisten er tom 
         if (imageList == null || imageList.isEmpty()) {
             return;
         }
