@@ -42,6 +42,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="20dp"
+            android:backgroundTint="#F9AA33"
             android:text="@string/addButtonText" />
 
         <Button
@@ -49,6 +50,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="20dp"
+            android:backgroundTint="#344955"
             android:text="@string/sortAlphabeticalButtonText" />
 
         <Button
@@ -56,6 +58,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="20dp"
+            android:backgroundTint="#344955"
             android:text="@string/sortUnalphabeticalButtonText" />
 
     </LinearLayout>

@@ -1,6 +1,7 @@
 package no.hvl.dat153.quizapp_oblig3;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,6 +9,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 
@@ -15,8 +17,10 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHol
 
     private Context context;
     private List<ImageEntity> imageList;
+    private OnItemClickListener listener;
 
     public ImageAdapter(Context context, List<ImageEntity> imageList) {
+        this.context = context;
         this.imageList = imageList;
     }
 
@@ -39,7 +43,15 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHol
         return imageList.size();
     }
 
-    public static class ImageViewHolder extends RecyclerView.ViewHolder {
+    public void setOnItemClickListener(OnItemClickListener listener) {
+        this.listener = listener;
+    }
+
+    public interface OnItemClickListener {
+        void onItemClick(ImageEntity image);
+    }
+
+    public class ImageViewHolder extends RecyclerView.ViewHolder {
         public ImageView imageView;
         public TextView textView;
 
@@ -47,7 +59,31 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHol
             super(itemView);
             imageView = itemView.findViewById(R.id.image_view_gallery);
             textView = itemView.findViewById(R.id.text_view_name);
+
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    int position = getAdapterPosition();
+                    if (position != RecyclerView.NO_POSITION && listener != null) {
+                        showDeleteConfirmationDialog(imageList.get(position));
+                    }
+                }
+            });
         }
     }
-}
 
+    private void showDeleteConfirmationDialog(final ImageEntity imageEntity) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setMessage("Are you sure you want to delete this image?")
+                .setPositiveButton("Delete", (dialog, id) -> {
+                    if (listener != null) {
+                        listener.onItemClick(imageEntity);
+                    }
+                })
+                .setNegativeButton("Cancel", (dialog, id) -> {
+                    dialog.dismiss();
+                });
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+    }
+}

@@ -45,6 +45,7 @@
             android:id="@+id/button1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:backgroundTint="#F9AA33"
             android:text="@string/option1" />
 
         <Button
@@ -52,6 +53,7 @@
             android:id="@+id/button2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:backgroundTint="#F9AA33"
             android:text="@string/option2" />
 
         <Button
@@ -59,6 +61,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
+            android:backgroundTint="#F9AA33"
             android:text="@string/option3" />
 
     </LinearLayout>

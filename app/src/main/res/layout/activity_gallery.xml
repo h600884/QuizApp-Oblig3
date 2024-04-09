@@ -8,8 +8,8 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_view_gallery"
-        android:layout_width="300dp"
-        android:layout_height="300dp"
+        android:layout_width="400dp"
+        android:layout_height="400dp"
         app:layout_constraintBottom_toTopOf="@+id/linearlayout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -18,45 +18,69 @@
     <LinearLayout
         android:id="@+id/linearlayout"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="165dp"
         android:layout_gravity="center"
         android:orientation="vertical"
         app:layout_constraintBottom_toTopOf="@+id/linearlayout2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent">
+
         <EditText
             android:id="@+id/textinput"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="20dp"
-            android:autofillHints="Enter a name here"
             android:hint="@string/image_name"
             android:inputType="text" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linearlayout3"
+        android:layout_width="0dp"
+        android:layout_height="100dp"
+        android:layout_gravity="center"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="@id/linearlayout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
 
         <Button
             android:id="@+id/addbutton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="20dp"
+            android:backgroundTint="#F9AA33"
             android:text="@string/addButtonText" />
+
+        <Button
+            android:id="@+id/confirm_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="20dp"
+            android:backgroundTint="#F9AA33"
+            android:text="@string/confirm"
+            android:visibility="gone"/>
+
     </LinearLayout>
 
     <LinearLayout
         android:id="@+id/linearlayout2"
         android:layout_width="0dp"
-        android:layout_height="100dp"
+        android:layout_height="80dp"
         android:layout_gravity="center"
         android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent">
+
         <Button
             android:id="@+id/sortalphabeticalbutton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="20dp"
+            android:backgroundTint="#344955"
             android:text="@string/sortAlphabeticalButtonText" />
 
         <Button
@@ -64,6 +88,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="20dp"
+            android:backgroundTint="#344955"
             android:text="@string/sortUnalphabeticalButtonText" />
     </LinearLayout>
 

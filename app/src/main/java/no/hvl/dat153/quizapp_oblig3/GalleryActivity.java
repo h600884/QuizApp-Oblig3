@@ -6,8 +6,12 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.TextUtils;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
+
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.activity.result.ActivityResult;
@@ -39,8 +43,10 @@ public class GalleryActivity extends AppCompatActivity {
         RecyclerView recyclerView = findViewById(R.id.recycler_view_gallery);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        pickImageLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
+        Button confirmButton = findViewById(R.id.confirm_button);
+        confirmButton.setVisibility(View.GONE);
 
+        pickImageLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
             @SuppressLint("WrongConstant")
             @Override
             public void onActivityResult(ActivityResult result) {
@@ -48,22 +54,41 @@ public class GalleryActivity extends AppCompatActivity {
                     Intent intent = result.getData();
 
                     if (intent != null) {
-
                         Uri selectedImageUri = intent.getData();
                         if (selectedImageUri != null) {
-                            int takeFlags = intent.getFlags() & (Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-                            getContentResolver().takePersistableUriPermission(selectedImageUri, takeFlags);
-                            EditText editText = findViewById(R.id.textinput);
-                            String imageText = editText.getText().toString();
+                            // Lagre URI-en til det valgte bildet
+                            selectedImageUri = intent.getData();
 
-                            ImageEntity image = new ImageEntity(imageText, selectedImageUri);
-                            imageViewModel.insert(image);
+                            // Vis bekreftelsesknappen
+                            confirmButton.setVisibility(View.VISIBLE);
+                            Uri finalSelectedImageUri = selectedImageUri;
+                            confirmButton.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    // Hent tekst fra EditText for beskrivelsen
+                                    EditText editText = findViewById(R.id.textinput);
+                                    String imageText = editText.getText().toString();
 
+                                    if (!TextUtils.isEmpty(imageText)) {
+                                        // Opprett et bildeobjekt med beskrivelse og URI
+                                        ImageEntity image = new ImageEntity(imageText, finalSelectedImageUri);
+                                        // Legg til bildet i galleriet
+                                        imageViewModel.insert(image);
+                                        // Skjul bekreftelsesknappen etter at bildet er lagt til
+                                        confirmButton.setVisibility(View.GONE);
+                                    } else {
+                                        // Gi en feilmelding om at beskrivelse mangler
+                                        Toast.makeText(GalleryActivity.this, "Please enter a description", Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+                            });
                         }
                     }
                 }
             }
         });
+
+
         // Opprett ImageViewModel
         imageViewModel = new ViewModelProvider(this).get(ImageViewModel.class);
 
@@ -108,6 +133,11 @@ public class GalleryActivity extends AppCompatActivity {
             imageList.sort((o1, o2) -> o2.getImageDescription().compareToIgnoreCase(o1.getImageDescription()));
             // Oppdater RecyclerView etter sorteringen
             imageAdapter.notifyDataSetChanged();
+        });
+
+        // Set click listener for RecyclerView items
+        imageAdapter.setOnItemClickListener(image -> {
+            imageViewModel.deleteWithId(image.getId());
         });
 
     }

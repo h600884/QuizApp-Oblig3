@@ -1,12 +1,16 @@
 <resources>
     <string name="app_name">QuizApp-Oblig3</string>
     <string name="addButtonText"> Add an image </string>
-    <string name="image_name"> Image description </string>
-    <string name="yourScore">Score: 0 of 0</string>
+    <string name="image_name"> Enter image name here </string>
+    <string name="yourScore">Score: 0 of 0 </string>
     <string name="imageDescription" />
     <string name="option1" />
     <string name="option2">\n</string>
     <string name="option3" />
     <string name="sortUnalphabeticalButtonText"> Sort Z-A </string>
     <string name="sortAlphabeticalButtonText"> Sort A-Z </string>
+    <string name="gallery">Gallery</string>
+    <string name="quiz">Quiz</string>
+    <string name="the_quiz_app">The Quiz App</string>
+    <string name="confirm">Confirm</string>
 </resources>
