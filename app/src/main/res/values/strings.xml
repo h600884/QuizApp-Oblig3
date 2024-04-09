@@ -2,7 +2,7 @@
     <string name="app_name">QuizApp-Oblig3</string>
     <string name="addButtonText"> Add an image </string>
     <string name="image_name"> Image description </string>
-    <string name="yourScore" />
+    <string name="yourScore">Score: 0 of 0</string>
     <string name="imageDescription" />
     <string name="option1" />
     <string name="option2">\n</string>

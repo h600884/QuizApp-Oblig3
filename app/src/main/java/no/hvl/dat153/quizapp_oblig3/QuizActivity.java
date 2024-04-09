@@ -6,6 +6,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -38,7 +39,6 @@ public class QuizActivity extends AppCompatActivity {
 
         quizImageView = findViewById(R.id.quizImage);
         scoreTextView = findViewById(R.id.scoreText);
-        checkAnswerTextView = findViewById(R.id.checkAnswer);
         option1Button = findViewById(R.id.button1);
         option2Button = findViewById(R.id.button2);
         option3Button = findViewById(R.id.button3);
@@ -90,36 +90,49 @@ public class QuizActivity extends AppCompatActivity {
         ImageEntity currentImage = imageList.get(currentQuestionIndex);
         quizImageView.setImageURI(currentImage.getImageUri());
 
-        // Sett alternativene tilfeldig
+        // Prepare a list of options, starting with the correct answer
         List<String> options = new ArrayList<>();
         options.add(currentImage.getImageDescription());
-        options.add(getRandomOption());
-        options.add(getRandomOption());
+
+        // Copy and shuffle imageList to ensure randomness
+        List<ImageEntity> shuffledList = new ArrayList<>(imageList);
+        Collections.shuffle(shuffledList);
+
+        // Prepare a list of unique options, excluding the current image
+        List<String> otherDescriptions = new ArrayList<>();
+        for (ImageEntity image : shuffledList) {
+            if (!image.getImageDescription().equals(currentImage.getImageDescription())) {
+                otherDescriptions.add(image.getImageDescription());
+            }
+        }
+
+        // Shuffle the list of other descriptions and pick the first two as random options
+        Collections.shuffle(otherDescriptions);
+        options.add(otherDescriptions.get(0));  // Add the first unique option
+        options.add(otherDescriptions.get(1));  // Add the second unique option
+
+        // Shuffle the final options list to randomize the order
         Collections.shuffle(options);
 
-        // Vis alternativene på knappene
+        // Display the options on the buttons
         option1Button.setText(options.get(0));
         option2Button.setText(options.get(1));
         option3Button.setText(options.get(2));
     }
 
-    private String getRandomOption() {
-        Random random = new Random();
-        ImageEntity randomImage = imageList.get(random.nextInt(imageList.size()));
-        return randomImage.getImageDescription();
-    }
-
     private void checkAnswer(String selectedAnswer) {
         String correctAnswer = imageList.get(currentQuestionIndex).getImageDescription();
+        String feedback;
         if (selectedAnswer.equals(correctAnswer)) {
             score++;
-            checkAnswerTextView.setText("Correct!");
+            feedback = "Correct!";
         } else {
-            checkAnswerTextView.setText("Incorrect. Correct answer is: " + correctAnswer);
+            feedback = "Incorrect. Correct answer is: " + correctAnswer;
         }
+        Toast.makeText(this, feedback, Toast.LENGTH_SHORT).show();
 
         // Oppdater poengsummen
-        scoreTextView.setText(String.valueOf(score));
+        setScoreTextView(score, currentQuestionIndex + 1);
 
         // Gå til neste spørsmål eller avslutt quizen hvis alle spørsmålene er besvart
         currentQuestionIndex++;
@@ -129,6 +142,12 @@ public class QuizActivity extends AppCompatActivity {
             // Avslutt quizen
             finishQuiz();
         }
+    }
+
+    private void setScoreTextView(int score, int totalQuestions) {
+        // Oppdater poengsummen
+        String updatedScore = "Score: " + score + " of " + (totalQuestions);
+        scoreTextView.setText(updatedScore);
     }
 
     private void finishQuiz() {
