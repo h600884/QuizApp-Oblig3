@@ -3,7 +3,6 @@ package no.hvl.dat153.quizapp_oblig3;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -17,25 +16,15 @@ public class MainActivity extends AppCompatActivity {
 
         // Sett opp knappen for å åpne GalleryActivity
         Button galleryButton = findViewById(R.id.gallery_button);
-        galleryButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openGalleryActivity();
-            }
-        });
+        galleryButton.setOnClickListener(v -> openGalleryActivity());
 
         // Sett opp knappen for å åpne QuizActivity
         Button quizButton = findViewById(R.id.quiz_button);
-        quizButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openQuizActivity();
-            }
-        });
+        quizButton.setOnClickListener(v -> openQuizActivity());
 
         imageRepository = new ImageRepository(getApplication());
 
-        imageRepository.deleteAll();
+        //imageRepository.deleteAll();
 
         imageRepository.getAllImages().observe(this, images -> {
             if(images.isEmpty()) {

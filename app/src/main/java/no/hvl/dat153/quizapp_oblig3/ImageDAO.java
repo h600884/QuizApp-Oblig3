@@ -4,7 +4,6 @@ import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.Query;
-
 import java.util.List;
 
 @Dao
@@ -22,9 +21,4 @@ public interface ImageDAO {
     @Query("SELECT * FROM imageTable")
     LiveData<List<ImageEntity>> getAllImages();
 
-    @Query("SELECT * FROM imageTable ORDER BY imageDescription DESC")
-    LiveData<List<ImageEntity>> getAllImageDesc();
-
-    @Query("SELECT * FROM imageTable ORDER BY imageDescription ASC")
-    LiveData<List<ImageEntity>> getAllImageAsc();
 }

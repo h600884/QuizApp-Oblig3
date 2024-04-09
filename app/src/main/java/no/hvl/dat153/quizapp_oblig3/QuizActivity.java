@@ -1,28 +1,22 @@
 package no.hvl.dat153.quizapp_oblig3;
 
-import android.content.DialogInterface;
+import android.content.res.Configuration;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Random;
 
 public class QuizActivity extends AppCompatActivity {
 
     private ImageView quizImageView;
     private TextView scoreTextView;
-    private TextView checkAnswerTextView;
     private Button option1Button;
     private Button option2Button;
     private Button option3Button;
@@ -30,13 +24,16 @@ public class QuizActivity extends AppCompatActivity {
     private List<ImageEntity> imageList;
     private int currentQuestionIndex;
     private int score;
-    private ImageViewModel imageViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_quiz);
-
+        // Endrer layouten ut i fra rotasjonen på telefonen
+        if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE){
+            setContentView(R.layout.activity_quiz_landscape);
+        } else {
+            setContentView(R.layout.activity_quiz);
+        }
         quizImageView = findViewById(R.id.quizImage);
         scoreTextView = findViewById(R.id.scoreText);
         option1Button = findViewById(R.id.button1);
@@ -44,40 +41,22 @@ public class QuizActivity extends AppCompatActivity {
         option3Button = findViewById(R.id.button3);
 
         // Opprett ViewModel
-        imageViewModel = new ViewModelProvider(this).get(ImageViewModel.class);
+        ImageViewModel imageViewModel = new ViewModelProvider(this).get(ImageViewModel.class);
 
         // Lytt etter endringer i listen med bilder fra ViewModel
-        imageViewModel.getAllImages().observe(this, new Observer<List<ImageEntity>>() {
-            @Override
-            public void onChanged(List<ImageEntity> images) {
-                imageList = images;
-                // Sett opp første spørsmål når bildene er lastet
-                currentQuestionIndex = 0;
-                setQuestion();
-            }
+        imageViewModel.getAllImages().observe(this, images -> {
+            imageList = images;
+            // Sett opp første spørsmål når bildene er lastet
+            currentQuestionIndex = 0;
+            setQuestion();
         });
 
         // Lyttere for valgknapper
-        option1Button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                checkAnswer(option1Button.getText().toString());
-            }
-        });
+        option1Button.setOnClickListener(v -> checkAnswer(option1Button.getText().toString()));
 
-        option2Button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                checkAnswer(option2Button.getText().toString());
-            }
-        });
+        option2Button.setOnClickListener(v -> checkAnswer(option2Button.getText().toString()));
 
-        option3Button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                checkAnswer(option3Button.getText().toString());
-            }
-        });
+        option3Button.setOnClickListener(v -> checkAnswer(option3Button.getText().toString()));
     }
 
     private void setQuestion() {
@@ -153,13 +132,10 @@ public class QuizActivity extends AppCompatActivity {
     private void finishQuiz() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Quiz Finished");
-        builder.setMessage("Your score: " + score);
-        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                // Avslutt QuizActivity
-                finish();
-            }
+        builder.setMessage("Your score: " + score + " of " + currentQuestionIndex);
+        builder.setPositiveButton("OK", (dialog, which) -> {
+            // Avslutt QuizActivity
+            finish();
         });
         builder.setCancelable(false); // Hindrer at brukeren lukker dialogboksen uten å trykke på OK
         builder.show();

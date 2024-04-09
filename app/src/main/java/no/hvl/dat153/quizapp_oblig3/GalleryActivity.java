@@ -6,10 +6,8 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.activity.result.ActivityResult;
@@ -19,13 +17,11 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class GalleryActivity extends AppCompatActivity {
 
     private ActivityResultLauncher<Intent> pickImageLauncher;
-    private RecyclerView recyclerView;
     private ImageAdapter imageAdapter;
     private List<ImageEntity> imageList;
     private ImageViewModel imageViewModel;
@@ -40,7 +36,7 @@ public class GalleryActivity extends AppCompatActivity {
             setContentView(R.layout.activity_gallery);
         }
         // Initialiser RecyclerView
-        recyclerView = findViewById(R.id.recycler_view_gallery);
+        RecyclerView recyclerView = findViewById(R.id.recycler_view_gallery);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         pickImageLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
@@ -87,7 +83,6 @@ public class GalleryActivity extends AppCompatActivity {
         imageAdapter = new ImageAdapter(this, imageList);
         recyclerView.setAdapter(imageAdapter);
 
-
         // Legg til bilder
         Button addButton = findViewById(R.id.addbutton);
         addButton.setOnClickListener(v -> {
@@ -99,26 +94,20 @@ public class GalleryActivity extends AppCompatActivity {
 
         // Sortere listen med bildene etter alfabetisk-rekkefølge
         Button sortAlphabeticalButton = findViewById(R.id.sortalphabeticalbutton);
-        sortAlphabeticalButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Sorter bildene
-                Collections.sort(imageList, (o1, o2) -> o1.getImageDescription().compareToIgnoreCase(o2.getImageDescription()));
-                // Oppdater RecyclerView etter sorteringen
-                imageAdapter.notifyDataSetChanged();
-            }
+        sortAlphabeticalButton.setOnClickListener(v -> {
+            // Sorter bildene
+            imageList.sort((o1, o2) -> o1.getImageDescription().compareToIgnoreCase(o2.getImageDescription()));
+            // Oppdater RecyclerView etter sorteringen
+            imageAdapter.notifyDataSetChanged();
         });
 
         // Sortere listen med bildene etter motsatt alfabetisk-rekkefølge
         Button sortUnalphabeticalButton = findViewById(R.id.sortunalphabeticalbutton);
-        sortUnalphabeticalButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Sorter bildene
-                Collections.sort(imageList, (o1, o2) -> o2.getImageDescription().compareToIgnoreCase(o1.getImageDescription()));
-                // Oppdater RecyclerView etter sorteringen
-                imageAdapter.notifyDataSetChanged();
-            }
+        sortUnalphabeticalButton.setOnClickListener(v -> {
+            // Sorter bildene
+            imageList.sort((o1, o2) -> o2.getImageDescription().compareToIgnoreCase(o1.getImageDescription()));
+            // Oppdater RecyclerView etter sorteringen
+            imageAdapter.notifyDataSetChanged();
         });
 
     }

@@ -31,17 +31,8 @@ public class ImageRepository {
     }
 
     void deleteWithId(long id) {
-        ImageDatabase.databaseWriteExecutor.execute(() -> {
-            imageDao.deleteWithId(id);
-        });
+        ImageDatabase.databaseWriteExecutor.execute(() -> imageDao.deleteWithId(id));
     }
 
-    LiveData<List<ImageEntity>> getAllImageDesc() {
-        return imageDao.getAllImageDesc();
-    }
-
-    LiveData<List<ImageEntity>> getAllImageAsc() {
-        return imageDao.getAllImageAsc();
-    }
 
 }

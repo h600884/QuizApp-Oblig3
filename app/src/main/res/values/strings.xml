@@ -7,6 +7,6 @@
     <string name="option1" />
     <string name="option2">\n</string>
     <string name="option3" />
-    <string name="sortUnalphabeticalButtonText"> Sort unalphabetical </string>
-    <string name="sortAlphabeticalButtonText"> Sort alphabetical </string>
+    <string name="sortUnalphabeticalButtonText"> Sort Z-A </string>
+    <string name="sortAlphabeticalButtonText"> Sort A-Z </string>
 </resources>
