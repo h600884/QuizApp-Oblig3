@@ -20,7 +20,6 @@ public class QuizActivity extends AppCompatActivity {
     private Button option1Button;
     private Button option2Button;
     private Button option3Button;
-
     private List<ImageEntity> imageList;
     private int currentQuestionIndex;
     private int score;
@@ -34,6 +33,7 @@ public class QuizActivity extends AppCompatActivity {
         } else {
             setContentView(R.layout.activity_quiz);
         }
+
         quizImageView = findViewById(R.id.quizImage);
         scoreTextView = findViewById(R.id.scoreText);
         option1Button = findViewById(R.id.button1);
@@ -69,15 +69,15 @@ public class QuizActivity extends AppCompatActivity {
         ImageEntity currentImage = imageList.get(currentQuestionIndex);
         quizImageView.setImageURI(currentImage.getImageUri());
 
-        // Prepare a list of options, starting with the correct answer
+        // Lager en liste av alternativer, starter med det riktige svaret
         List<String> options = new ArrayList<>();
         options.add(currentImage.getImageDescription());
 
-        // Copy and shuffle imageList to ensure randomness
+        // Kopierer og shuffler imageList for å sikre tilfeldighet
         List<ImageEntity> shuffledList = new ArrayList<>(imageList);
         Collections.shuffle(shuffledList);
 
-        // Prepare a list of unique options, excluding the current image
+        // Lager en liste av unike svar, eksludert det nåværende bilde
         List<String> otherDescriptions = new ArrayList<>();
         for (ImageEntity image : shuffledList) {
             if (!image.getImageDescription().equals(currentImage.getImageDescription())) {
@@ -85,15 +85,15 @@ public class QuizActivity extends AppCompatActivity {
             }
         }
 
-        // Shuffle the list of other descriptions and pick the first two as random options
+        // Shuffler listen av andre beksrivelser og velger de to første som tilfeldige svar
         Collections.shuffle(otherDescriptions);
-        options.add(otherDescriptions.get(0));  // Add the first unique option
-        options.add(otherDescriptions.get(1));  // Add the second unique option
+        options.add(otherDescriptions.get(0));
+        options.add(otherDescriptions.get(1));
 
-        // Shuffle the final options list to randomize the order
+        // Shuffler endelige listen med alternativer for å tilfeldiggjøre rekkefølgen
         Collections.shuffle(options);
 
-        // Display the options on the buttons
+        // Viser alternativene på knappene
         option1Button.setText(options.get(0));
         option2Button.setText(options.get(1));
         option3Button.setText(options.get(2));
@@ -134,10 +134,9 @@ public class QuizActivity extends AppCompatActivity {
         builder.setTitle("Quiz Finished");
         builder.setMessage("Your score: " + score + " of " + currentQuestionIndex);
         builder.setPositiveButton("OK", (dialog, which) -> {
-            // Avslutt QuizActivity
             finish();
         });
-        builder.setCancelable(false); // Hindrer at brukeren lukker dialogboksen uten å trykke på OK
+        builder.setCancelable(false);
         builder.show();
     }
 }

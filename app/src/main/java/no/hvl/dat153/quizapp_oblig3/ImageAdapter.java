@@ -1,7 +1,6 @@
 package no.hvl.dat153.quizapp_oblig3;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -60,13 +59,10 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHol
             imageView = itemView.findViewById(R.id.image_view_gallery);
             textView = itemView.findViewById(R.id.text_view_name);
 
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    int position = getAdapterPosition();
-                    if (position != RecyclerView.NO_POSITION && listener != null) {
-                        showDeleteConfirmationDialog(imageList.get(position));
-                    }
+            itemView.setOnClickListener(v -> {
+                int position = getAdapterPosition();
+                if (position != RecyclerView.NO_POSITION && listener != null) {
+                    showDeleteConfirmationDialog(imageList.get(position));
                 }
             });
         }

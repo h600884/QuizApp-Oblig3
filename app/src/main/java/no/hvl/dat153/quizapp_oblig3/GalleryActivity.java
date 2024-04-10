@@ -59,27 +59,25 @@ public class GalleryActivity extends AppCompatActivity {
                             // Lagre URI-en til det valgte bildet
                             selectedImageUri = intent.getData();
 
-                            // Vis bekreftelsesknappen
+                            // Vis bekreftelsesknappen hvis et bilde er lagt til
                             confirmButton.setVisibility(View.VISIBLE);
                             Uri finalSelectedImageUri = selectedImageUri;
-                            confirmButton.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    // Hent tekst fra EditText for beskrivelsen
-                                    EditText editText = findViewById(R.id.textinput);
-                                    String imageText = editText.getText().toString();
 
-                                    if (!TextUtils.isEmpty(imageText)) {
-                                        // Opprett et bildeobjekt med beskrivelse og URI
-                                        ImageEntity image = new ImageEntity(imageText, finalSelectedImageUri);
-                                        // Legg til bildet i galleriet
-                                        imageViewModel.insert(image);
-                                        // Skjul bekreftelsesknappen etter at bildet er lagt til
-                                        confirmButton.setVisibility(View.GONE);
-                                    } else {
-                                        // Gi en feilmelding om at beskrivelse mangler
-                                        Toast.makeText(GalleryActivity.this, "Please enter a description", Toast.LENGTH_SHORT).show();
-                                    }
+                            confirmButton.setOnClickListener(v -> {
+                                // Hent tekst fra EditText for beskrivelsen
+                                EditText editText = findViewById(R.id.textinput);
+                                String imageText = editText.getText().toString();
+
+                                if (!TextUtils.isEmpty(imageText)) {
+                                    // Opprett et bildeobjekt med beskrivelse og URI
+                                    ImageEntity image = new ImageEntity(imageText, finalSelectedImageUri);
+                                    // Legg til bildet i galleriet
+                                    imageViewModel.insert(image);
+                                    // Skjul bekreftelsesknappen etter at bildet er lagt til
+                                    confirmButton.setVisibility(View.GONE);
+                                } else {
+                                    // Gi en feilmelding om at beskrivelse mangler
+                                    Toast.makeText(GalleryActivity.this, "Please enter a description", Toast.LENGTH_SHORT).show();
                                 }
                             });
                         }
@@ -135,7 +133,7 @@ public class GalleryActivity extends AppCompatActivity {
             imageAdapter.notifyDataSetChanged();
         });
 
-        // Set click listener for RecyclerView items
+        // Lytter for å slette bilder
         imageAdapter.setOnItemClickListener(image -> {
             imageViewModel.deleteWithId(image.getId());
         });

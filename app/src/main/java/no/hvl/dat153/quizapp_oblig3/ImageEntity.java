@@ -1,7 +1,6 @@
 package no.hvl.dat153.quizapp_oblig3;
 
 import android.net.Uri;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.room.Entity;
@@ -12,9 +11,7 @@ public class ImageEntity {
 
     @PrimaryKey(autoGenerate = true)
     private int id;
-
     private String imageDescription;
-
     private Uri imageUri;
 
     public ImageEntity(@NonNull String imageDescription, @NonNull Uri imageUri) {

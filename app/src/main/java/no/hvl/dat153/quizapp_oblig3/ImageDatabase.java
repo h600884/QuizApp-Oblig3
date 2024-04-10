@@ -19,7 +19,7 @@ public abstract class ImageDatabase extends RoomDatabase {
     private static volatile ImageDatabase INSTANCE;
     private static final int NUMBER_OF_THREADS = 4;
 
-    //run database operations async on a background thread
+    // Kjører database operasjoner asynkront på en bakgrunnstråd
     static final ExecutorService databaseWriteExecutor =
             Executors.newFixedThreadPool(NUMBER_OF_THREADS);
 
@@ -28,13 +28,10 @@ public abstract class ImageDatabase extends RoomDatabase {
         if (INSTANCE == null) {
             synchronized (ImageDatabase.class) {
                 if (INSTANCE == null) {
-
                     INSTANCE = Room.databaseBuilder(context.getApplicationContext(),
                                     ImageDatabase.class, "image_database")
                             .fallbackToDestructiveMigration()
                             .build();
-
-
                 }
             }
         }
