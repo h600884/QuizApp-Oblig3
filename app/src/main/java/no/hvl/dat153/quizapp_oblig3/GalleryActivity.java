@@ -47,6 +47,7 @@ public class GalleryActivity extends AppCompatActivity {
         confirmButton.setVisibility(View.GONE);
 
         pickImageLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
+
             @SuppressLint("WrongConstant")
             @Override
             public void onActivityResult(ActivityResult result) {
@@ -54,39 +55,22 @@ public class GalleryActivity extends AppCompatActivity {
                     Intent intent = result.getData();
 
                     if (intent != null) {
+
                         Uri selectedImageUri = intent.getData();
                         if (selectedImageUri != null) {
-                            // Lagre URI-en til det valgte bildet
-                            selectedImageUri = intent.getData();
+                            int takeFlags = intent.getFlags() & (Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+                            getContentResolver().takePersistableUriPermission(selectedImageUri, takeFlags);
+                            EditText editText = findViewById(R.id.textinput);
+                            String imageText = editText.getText().toString();
 
-                            // Vis bekreftelsesknappen hvis et bilde er lagt til
-                            confirmButton.setVisibility(View.VISIBLE);
-                            Uri finalSelectedImageUri = selectedImageUri;
+                            ImageEntity image = new ImageEntity(imageText, selectedImageUri);
+                            imageViewModel.insert(image);
 
-                            confirmButton.setOnClickListener(v -> {
-                                // Hent tekst fra EditText for beskrivelsen
-                                EditText editText = findViewById(R.id.textinput);
-                                String imageText = editText.getText().toString();
-
-                                if (!TextUtils.isEmpty(imageText)) {
-                                    // Opprett et bildeobjekt med beskrivelse og URI
-                                    ImageEntity image = new ImageEntity(imageText, finalSelectedImageUri);
-                                    // Legg til bildet i galleriet
-                                    imageViewModel.insert(image);
-                                    // Skjul bekreftelsesknappen etter at bildet er lagt til
-                                    confirmButton.setVisibility(View.GONE);
-                                } else {
-                                    // Gi en feilmelding om at beskrivelse mangler
-                                    Toast.makeText(GalleryActivity.this, "Please enter a description", Toast.LENGTH_SHORT).show();
-                                }
-                            });
                         }
                     }
                 }
             }
         });
-
-
         // Opprett ImageViewModel
         imageViewModel = new ViewModelProvider(this).get(ImageViewModel.class);
 
