@@ -41,6 +41,7 @@ dependencies {
 
     // Room database
     implementation ("androidx.room:room-runtime:2.4.0")
+    implementation(libs.espresso.intents)
     annotationProcessor ("androidx.room:room-compiler:2.4.0")
 
     // Testing dependencies
