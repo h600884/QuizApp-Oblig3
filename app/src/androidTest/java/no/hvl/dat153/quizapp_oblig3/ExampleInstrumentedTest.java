@@ -55,26 +55,26 @@ public class ExampleInstrumentedTest {
         Intents.release();
     }
 
+    // Sjekker at når du trykker på "Gallery"-knappen blir du sendt til galleriet og at recyclerView viser frem bildene
     @Test
     public void galleryButtonOpensGalleryActivity() {
         onView(withId(R.id.gallery_button)).perform(click());
         onView(withId(R.id.recycler_view_gallery)).check(matches(isDisplayed()));
     }
 
+    // Sjekker at når du trykker på første svar i quizen så vil det vise om det var feil og at scoren forblir uendret mens runden går opp 1
+    // Vil ikke alltid gå igjennom siden først knapp vil av og til være riktig svar for quizen sin del
     @Test
     public void scoreIsUpdatedCorrectly() {
         Intent intent = new Intent(ApplicationProvider.getApplicationContext(), QuizActivity.class);
 
         ActivityScenario.launch(intent);
 
-        // Click the first option (which is always the correct answer)
         onView(withId(R.id.button1)).perform(click());
 
-        // Check if the score text view is displayed
         onView(withId(R.id.scoreText)).check(matches(isDisplayed()));
 
-        // Check if the score text view contains the correct score
-        onView(withId(R.id.scoreText)).check(matches(ViewMatchers.withText("Score: 1 of 1")));
+        onView(withId(R.id.scoreText)).check(matches(ViewMatchers.withText("Score: 0 of 1")));
     }
 
 }
