@@ -61,5 +61,20 @@ public class ExampleInstrumentedTest {
         onView(withId(R.id.recycler_view_gallery)).check(matches(isDisplayed()));
     }
 
+    @Test
+    public void scoreIsUpdatedCorrectly() {
+        Intent intent = new Intent(ApplicationProvider.getApplicationContext(), QuizActivity.class);
+
+        ActivityScenario.launch(intent);
+
+        // Click the first option (which is always the correct answer)
+        onView(withId(R.id.button1)).perform(click());
+
+        // Check if the score text view is displayed
+        onView(withId(R.id.scoreText)).check(matches(isDisplayed()));
+
+        // Check if the score text view contains the correct score
+        onView(withId(R.id.scoreText)).check(matches(ViewMatchers.withText("Score: 1 of 1")));
+    }
 
 }
