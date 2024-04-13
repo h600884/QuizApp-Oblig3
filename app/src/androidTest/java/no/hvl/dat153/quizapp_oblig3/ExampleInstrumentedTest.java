@@ -1,47 +1,42 @@
 package no.hvl.dat153.quizapp_oblig3;
 
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
+import static androidx.test.espresso.action.ViewActions.typeText;
+import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.intent.Intents.intending;
+import static androidx.test.espresso.intent.matcher.IntentMatchers.hasAction;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
+
 import android.app.Activity;
 import android.app.Instrumentation;
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.widget.Button;
-import android.widget.ImageView;
 
 import androidx.test.core.app.ActivityScenario;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.espresso.intent.Intents;
-import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
-
 import androidx.test.ext.junit.runners.AndroidJUnit4;
-
+import static org.hamcrest.CoreMatchers.allOf;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import static org.hamcrest.CoreMatchers.allOf;
-import static org.junit.Assert.*;
-
-import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static androidx.test.espresso.matcher.ViewMatchers.withId;
-import static androidx.test.platform.app.InstrumentationRegistry.getInstrumentation;
-
-import static org.junit.Assert.*;
-
 /**
  * Instrumented test, which will execute on an Android device.
  *
  * @see <a href="http://d.android.com/tools/testing">Testing documentation</a>
  */
+
 @RunWith(AndroidJUnit4.class)
 public class ExampleInstrumentedTest {
-
     @Rule
     public ActivityScenarioRule<MainActivity> activityScenarioRule = new ActivityScenarioRule<>(MainActivity.class);
 
@@ -71,10 +66,43 @@ public class ExampleInstrumentedTest {
         ActivityScenario.launch(intent);
 
         onView(withId(R.id.button1)).perform(click());
-
         onView(withId(R.id.scoreText)).check(matches(isDisplayed()));
-
-        onView(withId(R.id.scoreText)).check(matches(ViewMatchers.withText("Score: 0 of 1")));
+        onView(withId(R.id.scoreText)).check(matches(withText("Score: 0 of 1")));
     }
+
+    @Test
+    public void DeleteingImageIsRemovedFromDb() {
+       /* Intent intent = new Intent(ApplicationProvider.getApplicationContext(), GalleryActivity.class);
+
+        ActivityScenario.launch(intent);*/
+        onView(withId(R.id.gallery_button)).perform(click());
+        onView(withId(R.id.recycler_view_gallery)).check(matches(isDisplayed()));
+        onView(allOf(withId(R.id.text_view_name), withText("Tree"))).check(matches(isDisplayed()));
+        onView(allOf(withId(R.id.text_view_name), withText("Tree"))).perform(click());
+        onView(allOf(withId(R.id.text_view_name), withText("Tree"))).check(doesNotExist());
+    }
+
+    @Test
+    public void AddingImageToDb() {
+        // Opprett en Intent-stub med ønsket bildeinformasjon
+        Intent resultData = new Intent();
+        Uri imageUri = Uri.parse("android.resource://no.hvl.dat153.quizapp_oblig3/" + R.drawable.giraffe);
+        resultData.setData(imageUri);
+
+        Intent intent = new Intent(ApplicationProvider.getApplicationContext(), GalleryActivity.class);
+        ActivityScenario.launch(intent);
+
+        onView(withId(R.id.textinput)).perform(typeText("Giraffe"), closeSoftKeyboard());
+        Instrumentation.ActivityResult activityResult = new Instrumentation.ActivityResult(Activity.RESULT_OK, intent);
+        intending(hasAction(Intent.ACTION_GET_CONTENT)).respondWith(activityResult);
+
+        onView(withId(R.id.addbutton)).perform(click());
+
+        onView(withId(R.id.recycler_view_gallery))
+                .check(matches(isDisplayed()));
+
+    }
+
+
 
 }

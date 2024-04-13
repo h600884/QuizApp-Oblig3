@@ -30,6 +30,7 @@ public class GalleryActivity extends AppCompatActivity {
     private List<ImageEntity> imageList;
     private ImageViewModel imageViewModel;
 
+    @SuppressLint("WrongConstant")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,50 +43,6 @@ public class GalleryActivity extends AppCompatActivity {
         // Initialiser RecyclerView
         RecyclerView recyclerView = findViewById(R.id.recycler_view_gallery);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-
-        Button confirmButton = findViewById(R.id.confirm_button);
-        confirmButton.setVisibility(View.GONE);
-
-        pickImageLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
-            @SuppressLint("WrongConstant")
-            @Override
-            public void onActivityResult(ActivityResult result) {
-                if (result.getResultCode() == Activity.RESULT_OK) {
-                    Intent intent = result.getData();
-
-                    if (intent != null) {
-                        Uri selectedImageUri = intent.getData();
-                        if (selectedImageUri != null) {
-                            // Lagre URI-en til det valgte bildet
-                            selectedImageUri = intent.getData();
-
-                            // Vis bekreftelsesknappen hvis et bilde er lagt til
-                            confirmButton.setVisibility(View.VISIBLE);
-                            Uri finalSelectedImageUri = selectedImageUri;
-
-                            confirmButton.setOnClickListener(v -> {
-                                // Hent tekst fra EditText for beskrivelsen
-                                EditText editText = findViewById(R.id.textinput);
-                                String imageText = editText.getText().toString();
-
-                                if (!TextUtils.isEmpty(imageText)) {
-                                    // Opprett et bildeobjekt med beskrivelse og URI
-                                    ImageEntity image = new ImageEntity(imageText, finalSelectedImageUri);
-                                    // Legg til bildet i galleriet
-                                    imageViewModel.insert(image);
-                                    // Skjul bekreftelsesknappen etter at bildet er lagt til
-                                    confirmButton.setVisibility(View.GONE);
-                                } else {
-                                    // Gi en feilmelding om at beskrivelse mangler
-                                    Toast.makeText(GalleryActivity.this, "Please enter a description", Toast.LENGTH_SHORT).show();
-                                }
-                            });
-                        }
-                    }
-                }
-            }
-        });
-
 
         // Opprett ImageViewModel
         imageViewModel = new ViewModelProvider(this).get(ImageViewModel.class);
@@ -106,7 +63,47 @@ public class GalleryActivity extends AppCompatActivity {
         imageAdapter = new ImageAdapter(this, imageList);
         recyclerView.setAdapter(imageAdapter);
 
-        // Legg til bilder
+        // Knapp som dukker opp dersom en bruker legg til et bilde, må trykke på denne før bilde blir lagt til i DB
+        Button confirmButton = findViewById(R.id.confirm_button);
+        confirmButton.setVisibility(View.GONE);
+
+        // Bilde velger som sjekker at bilde har en beskrivelse før bilde blir lagt til
+        pickImageLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+            if (result.getResultCode() == Activity.RESULT_OK) {
+                Intent intent = result.getData();
+                if (intent != null) {
+                    Uri selectedImageUri = intent.getData();
+                    if (selectedImageUri != null) {
+
+                        int takeFlags = intent.getFlags() & (Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+                        getContentResolver().takePersistableUriPermission(selectedImageUri, takeFlags);
+
+                        // Vis bekreftelsesknappen og legg til lytter
+                        confirmButton.setVisibility(View.VISIBLE);
+                        confirmButton.setOnClickListener(v -> {
+
+                            // Hent tekst fra EditText for beskrivelsen
+                            EditText editText = findViewById(R.id.textinput);
+                            String imageText = editText.getText().toString();
+
+                            if (!TextUtils.isEmpty(imageText)) {
+                                // Opprett et bildeobjekt med beskrivelse og URI
+                                ImageEntity image = new ImageEntity(imageText, selectedImageUri);
+                                // Legg til bildet i galleriet
+                                imageViewModel.insert(image);
+                                // Skjul bekreftelsesknappen etter at bildet er lagt til
+                                confirmButton.setVisibility(View.GONE);
+                            } else {
+                                // Gi en feilmelding om at beskrivelse mangler
+                                Toast.makeText(GalleryActivity.this, "Please enter a description", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }
+                }
+            }
+        });
+
+        // Knapp til å legge til bilder
         Button addButton = findViewById(R.id.addbutton);
         addButton.setOnClickListener(v -> {
             Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
@@ -115,7 +112,7 @@ public class GalleryActivity extends AppCompatActivity {
             pickImageLauncher.launch(intent);
         });
 
-        // Sortere listen med bildene etter alfabetisk-rekkefølge
+        // Knapp for å sortere listen med bildene etter alfabetisk-rekkefølge
         Button sortAlphabeticalButton = findViewById(R.id.sortalphabeticalbutton);
         sortAlphabeticalButton.setOnClickListener(v -> {
             // Sorter bildene
@@ -124,7 +121,7 @@ public class GalleryActivity extends AppCompatActivity {
             imageAdapter.notifyDataSetChanged();
         });
 
-        // Sortere listen med bildene etter motsatt alfabetisk-rekkefølge
+        // Knapp for å sortere listen med bildene etter motsatt alfabetisk-rekkefølge
         Button sortUnalphabeticalButton = findViewById(R.id.sortunalphabeticalbutton);
         sortUnalphabeticalButton.setOnClickListener(v -> {
             // Sorter bildene
@@ -136,7 +133,11 @@ public class GalleryActivity extends AppCompatActivity {
         // Lytter for å slette bilder
         imageAdapter.setOnItemClickListener(image -> {
             imageViewModel.deleteWithId(image.getId());
+            // Oppdaterer imageList etter slettingen
+            imageList.remove(image);
+            imageAdapter.notifyDataSetChanged();
         });
+
 
     }
 }
