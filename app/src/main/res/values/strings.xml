@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">QuizApp-Oblig3</string>
-    <string name="addButtonText"> Add an image </string>
-    <string name="image_name"> Enter image name here </string>
+    <string name="addButton"> Add an image </string>
+    <string name="imageName"> Enter image name here </string>
     <string name="yourScore">Score: 0 of 0 </string>
     <string name="imageDescription" />
     <string name="option1" />

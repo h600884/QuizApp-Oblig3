@@ -31,7 +31,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="20dp"
-            android:hint="@string/image_name"
+            android:hint="@string/imageName"
             android:inputType="text" />
     </LinearLayout>
 
@@ -51,7 +51,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="20dp"
             android:backgroundTint="#F9AA33"
-            android:text="@string/addButtonText" />
+            android:text="@string/addButton" />
 
         <Button
             android:id="@+id/confirm_button"
