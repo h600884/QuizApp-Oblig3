@@ -11,11 +11,11 @@
 ## Test cases:
 
 ### 1. Clicking a button in the main-menu takes you to the right sub-activity (i.e. to the Quiz or the Database; testing one button is enough):
-   - The test checks if you click on the gallery button in the main menu, you actually get sent to the gallery. This is expected to pass.
+   - The test checks that if you click on the gallery button in the main menu, you actually get sent to the gallery. This case is expected to pass.
 <img width="683" alt="Skjermbilde 2024-04-14 kl  16 35 35" src="https://github.com/h600884/QuizApp-Oblig3/assets/89258811/3c688d14-38b2-48cd-a817-8fc245a449a4">
 
 ### 2. Is the score updated correctly in the quiz (submit right/wrong answer and check if the score is correct afterwards):
-  - The test checks if you click on the first button in the quiz, and the answer is wrong, the test will pass. There is a 33% chance that the test will fail since the options is randomized. 
+  - The test checks that if you click on the first button in the quiz, and the answer is wrong, the score is updated to zero correct of one. This case has a 33% chance that the test will not pass, because the options buttons is randomized. 
 <img width="684" alt="Skjermbilde 2024-04-14 kl  16 35 58" src="https://github.com/h600884/QuizApp-Oblig3/assets/89258811/97b9d1c9-7b91-42db-880b-a16f22234bfe">
 
 ### 3. A test that checks that the number of registered pictures/persons is correct after adding/deleting an entry. 
