@@ -36,7 +36,7 @@
             android:layout_marginStart="20dp"
             android:layout_marginTop="20dp"
             android:autofillHints="Enter a name here"
-            android:hint="@string/image_name"
+            android:hint="@string/imageName"
             android:inputType="text" />
 
         <Button
@@ -47,7 +47,7 @@
             android:layout_marginStart="10dp"
             android:layout_marginTop="20dp"
             android:backgroundTint="#F9AA33"
-            android:text="@string/addButtonText" />
+            android:text="@string/addButton" />
 
         <Button
             android:id="@+id/confirm_button"

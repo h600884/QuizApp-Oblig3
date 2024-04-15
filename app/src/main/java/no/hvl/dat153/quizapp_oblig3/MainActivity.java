@@ -26,6 +26,7 @@ public class MainActivity extends AppCompatActivity {
 
         //imageRepository.deleteAll();
 
+        // Legger til standardbilder dersom en bruker har slettet alle bildene
         imageRepository.getAllImages().observe(this, images -> {
             if(images.isEmpty()) {
                     // Legg til standardbilder

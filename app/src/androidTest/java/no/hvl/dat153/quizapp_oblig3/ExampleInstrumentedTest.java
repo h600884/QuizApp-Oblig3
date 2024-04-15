@@ -70,6 +70,7 @@ public class ExampleInstrumentedTest {
         onView(withId(R.id.scoreText)).check(matches(withText("Score: 0 of 1")));
     }
 
+    // Sjekker at når du trykker på et bilde så blir bildet slettet
     @Test
     public void DeleteingImageIsRemovedFromDb() {
        /* Intent intent = new Intent(ApplicationProvider.getApplicationContext(), GalleryActivity.class);
@@ -77,14 +78,14 @@ public class ExampleInstrumentedTest {
         ActivityScenario.launch(intent);*/
         onView(withId(R.id.gallery_button)).perform(click());
         onView(withId(R.id.recycler_view_gallery)).check(matches(isDisplayed()));
-        onView(allOf(withId(R.id.text_view_name), withText("Tree"))).check(matches(isDisplayed()));
-        onView(allOf(withId(R.id.text_view_name), withText("Tree"))).perform(click());
-        onView(allOf(withId(R.id.text_view_name), withText("Tree"))).check(doesNotExist());
+        onView(allOf(withId(R.id.textViewName), withText("Tree"))).check(matches(isDisplayed()));
+        onView(allOf(withId(R.id.textViewName), withText("Tree"))).perform(click());
+        onView(allOf(withId(R.id.textViewName), withText("Tree"))).check(doesNotExist());
     }
 
+    // Tester om at når det blir lagt til et bilde gjennom drawable mappen så vil den dukke opp i galleriet
     @Test
     public void AddingImageToDb() {
-        // Opprett en Intent-stub med ønsket bildeinformasjon
         Intent resultData = new Intent();
         Uri imageUri = Uri.parse("android.resource://no.hvl.dat153.quizapp_oblig3/" + R.drawable.giraffe);
         resultData.setData(imageUri);
@@ -98,11 +99,7 @@ public class ExampleInstrumentedTest {
 
         onView(withId(R.id.addbutton)).perform(click());
 
-        onView(withId(R.id.recycler_view_gallery))
-                .check(matches(isDisplayed()));
+        onView(withId(R.id.recycler_view_gallery)).check(matches(isDisplayed()));
 
     }
-
-
-
 }

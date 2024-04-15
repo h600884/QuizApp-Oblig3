@@ -56,8 +56,8 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHol
 
         public ImageViewHolder(View itemView) {
             super(itemView);
-            imageView = itemView.findViewById(R.id.image_view_gallery);
-            textView = itemView.findViewById(R.id.text_view_name);
+            imageView = itemView.findViewById(R.id.imageViewGallery);
+            textView = itemView.findViewById(R.id.textViewName);
 
             itemView.setOnClickListener(v -> {
                 int position = getAdapterPosition();

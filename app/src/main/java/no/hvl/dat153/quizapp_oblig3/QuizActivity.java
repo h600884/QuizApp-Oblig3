@@ -46,6 +46,10 @@ public class QuizActivity extends AppCompatActivity {
         // Lytt etter endringer i listen med bilder fra ViewModel
         imageViewModel.getAllImages().observe(this, images -> {
             imageList = images;
+
+            // Gjør at bildene kommer i tilfeldig rekkefølge
+            shuffleImageList();
+
             // Sett opp første spørsmål når bildene er lastet
             currentQuestionIndex = 0;
             setQuestion();
@@ -57,6 +61,13 @@ public class QuizActivity extends AppCompatActivity {
         option2Button.setOnClickListener(v -> checkAnswer(option2Button.getText().toString()));
 
         option3Button.setOnClickListener(v -> checkAnswer(option3Button.getText().toString()));
+    }
+
+    private void shuffleImageList() {
+        // Sjekker at listen ikke er tom, dersom den inneholder bilder blir de shufflet
+        if (imageList != null && !imageList.isEmpty()) {
+            Collections.shuffle(imageList);
+        }
     }
 
     private void setQuestion() {
@@ -130,6 +141,7 @@ public class QuizActivity extends AppCompatActivity {
     }
 
     private void finishQuiz() {
+        // Når en bruker har gått igjennom alle bildene vil du få en pop-up boks som sier hvordan brukeren gjorde det i quizen
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Quiz Finished");
         builder.setMessage("Your score: " + score + " of " + currentQuestionIndex);

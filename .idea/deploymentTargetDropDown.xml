@@ -2,10 +2,7 @@
 <project version="4">
   <component name="deploymentTargetDropDown">
     <value>
-      <entry key="AddingImageInDB()">
-        <State />
-      </entry>
-      <entry key="DeleteingImageIsRemovedFromDB()">
+      <entry key="AddingImageToDb()">
         <State />
       </entry>
       <entry key="DeleteingImageIsRemovedFromDb()">
@@ -17,7 +14,10 @@
       <entry key="app">
         <State />
       </entry>
-      <entry key="testAddImage()">
+      <entry key="galleryButtonOpensGalleryActivity()">
+        <State />
+      </entry>
+      <entry key="scoreIsUpdatedCorrectly()">
         <State />
       </entry>
     </value>
