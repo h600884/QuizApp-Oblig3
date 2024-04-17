@@ -2,22 +2,22 @@
 <project version="4">
   <component name="deploymentTargetDropDown">
     <value>
-      <entry key="AddingImageToDb()">
-        <State />
-      </entry>
-      <entry key="DeleteingImageIsRemovedFromDb()">
-        <State />
-      </entry>
       <entry key="ExampleInstrumentedTest">
         <State />
       </entry>
+      <entry key="GalleryActivityTest">
+        <State />
+      </entry>
+      <entry key="MainActivityTest">
+        <State />
+      </entry>
+      <entry key="QuizActivityTest">
+        <State />
+      </entry>
+      <entry key="Tests in 'no.hvl.dat153.quizapp_oblig3'">
+        <State />
+      </entry>
       <entry key="app">
-        <State />
-      </entry>
-      <entry key="galleryButtonOpensGalleryActivity()">
-        <State />
-      </entry>
-      <entry key="scoreIsUpdatedCorrectly()">
         <State />
       </entry>
     </value>
