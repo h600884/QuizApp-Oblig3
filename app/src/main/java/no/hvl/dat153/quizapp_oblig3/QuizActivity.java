@@ -57,6 +57,10 @@ public class QuizActivity extends AppCompatActivity {
             // Sett opp første spørsmål når bildene er lastet
             currentQuestionIndex = 0;
             setQuestion();
+
+            if (imageList != null) {
+                setScoreTextView(0, imageList.size());
+            }
         });
 
         // Lyttere for valgknapper
@@ -65,6 +69,7 @@ public class QuizActivity extends AppCompatActivity {
         option2Button.setOnClickListener(v -> checkAnswer(option2Button.getText().toString()));
 
         option3Button.setOnClickListener(v -> checkAnswer(option3Button.getText().toString()));
+
     }
 
     private void shuffleImageList() {
@@ -145,17 +150,15 @@ public class QuizActivity extends AppCompatActivity {
         }
     }
 
-
-
     private void setScoreTextView(Integer score, Integer totalQuestions) {
-        // Oppdater poengsummen
-        if (score == null || totalQuestions == null) {
-            scoreTextView.setText(getString(R.string.yourScore, 0, 0));
-        } else {
-            String updatedScore = getString(R.string.yourScore, score, totalQuestions);
+        // Sjekk om imageList er initialisert og har data
+        if (imageList != null && !imageList.isEmpty() && score != null && totalQuestions != null) {
+            // Use imageList.size() as the total number of questions
+            String updatedScore = getString(R.string.yourScore, score, imageList.size());
             scoreTextView.setText(updatedScore);
         }
     }
+
 
 
     private void finishQuiz() {
@@ -180,5 +183,4 @@ public class QuizActivity extends AppCompatActivity {
         TextView scoreTextView = findViewById(R.id.scoreText);
         return scoreTextView.getText().toString();
     }
-
 }

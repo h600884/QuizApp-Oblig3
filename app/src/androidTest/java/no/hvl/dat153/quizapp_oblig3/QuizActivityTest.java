@@ -38,6 +38,4 @@ public class QuizActivityTest {
             assertEquals("Score: 0 of 3", scoreText);
         });
     }
-
-
 }
