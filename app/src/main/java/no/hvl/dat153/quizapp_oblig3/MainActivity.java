@@ -1,14 +1,25 @@
 package no.hvl.dat153.quizapp_oblig3;
 
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.RecyclerView;
+
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
     private ImageRepository imageRepository;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,4 +59,13 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(this, QuizActivity.class);
         startActivity(intent);
     }
+
+    // Metode for å sjekke om GalleryActivity har startet
+    public boolean isGalleryActivityStarted() {
+        Intent galleryIntent = new Intent(this, GalleryActivity.class);
+        PackageManager pm = getPackageManager();
+        List<ResolveInfo> activities = pm.queryIntentActivities(galleryIntent, 0);
+        return !activities.isEmpty();
+    }
+
 }

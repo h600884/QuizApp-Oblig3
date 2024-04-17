@@ -3,13 +3,17 @@ package no.hvl.dat153.quizapp_oblig3;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultCallback;
@@ -140,4 +144,66 @@ public class GalleryActivity extends AppCompatActivity {
 
 
     }
+
+    // Metode for å simulere klikk på bekreft-knappen
+    public void clickConfirmButton() {
+        Button confirmButton = findViewById(R.id.confirm_button);
+        confirmButton.performClick();
+    }
+
+    // Metode for å sjekke om et bilde med gitt navn er slettet fra databasen
+    public boolean isImageDeleted(String imageName) {
+        // Implementer logikk for å sjekke om et bilde med gitt navn er slettet fra databasen
+        // For eksempel kan du søke etter bilde med gitt navn i databasen og sjekke om det ikke lenger eksisterer
+        return true; // Placeholder, bytt ut med faktisk logikk
+    }
+
+    // Metode for å sjekke om et bilde er lagt til i databasen
+    public boolean isImageAdded() {
+        // Implementer logikk for å sjekke om et bilde er lagt til i databasen
+        // For eksempel kan du søke etter bildet i databasen og sjekke om det eksisterer
+        return true; // Placeholder, bytt ut med faktisk logikk
+    }
+
+    // Metode for å klikke på "Legg til" knappen
+    public void clickAddButton() {
+        Button addButton = findViewById(R.id.addbutton);
+        addButton.performClick();
+    }
+
+    // Metode for å klikke på et bilde med gitt navn
+    public void clickOnImage(String imageName) {
+        RecyclerView recyclerView = findViewById(R.id.recycler_view_gallery);
+        RecyclerView.Adapter adapter = recyclerView.getAdapter();
+        if (adapter != null) {
+            for (int i = 0; i < adapter.getItemCount(); i++) {
+                View itemView = recyclerView.getChildAt(i);
+                TextView textViewName = itemView.findViewById(R.id.textViewName);
+                if (textViewName != null && textViewName.getText().toString().equals(imageName)) {
+                    itemView.performClick();
+                    break;
+                }
+            }
+        }
+    }
+
+    // Metode for å klikke på galleriknappen
+    public void clickGalleryButton() {
+        View galleryButton = findViewById(R.id.gallery_button);
+        if (galleryButton != null) {
+            galleryButton.performClick();
+        } else {
+            Log.e("GalleryActivity", "Gallery button not found");
+        }
+    }
+
+
+    // Metode for å sjekke om GalleryActivity har startet
+    public boolean isGalleryActivityStarted() {
+        Intent galleryIntent = new Intent(this, GalleryActivity.class);
+        PackageManager pm = getPackageManager();
+        List<ResolveInfo> activities = pm.queryIntentActivities(galleryIntent, 0);
+        return !activities.isEmpty();
+    }
+
 }

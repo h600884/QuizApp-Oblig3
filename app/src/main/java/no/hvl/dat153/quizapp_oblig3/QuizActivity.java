@@ -2,6 +2,8 @@ package no.hvl.dat153.quizapp_oblig3;
 
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -9,6 +11,8 @@ import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.RecyclerView;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -111,6 +115,13 @@ public class QuizActivity extends AppCompatActivity {
     }
 
     private void checkAnswer(String selectedAnswer) {
+        // Sjekk om imageList er tom eller currentQuestionIndex er utenfor grensene til imageList
+        if (imageList.isEmpty() || currentQuestionIndex < 0 || currentQuestionIndex >= imageList.size()) {
+            // Håndter tilfellet der imageList er tom eller currentQuestionIndex er ugyldig
+            Toast.makeText(this, "Error: No questions available", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         String correctAnswer = imageList.get(currentQuestionIndex).getImageDescription();
         String feedback;
         if (selectedAnswer.equals(correctAnswer)) {
@@ -122,7 +133,7 @@ public class QuizActivity extends AppCompatActivity {
         Toast.makeText(this, feedback, Toast.LENGTH_SHORT).show();
 
         // Oppdater poengsummen
-        setScoreTextView(score, currentQuestionIndex + 1);
+        setScoreTextView(score, imageList.size());
 
         // Gå til neste spørsmål eller avslutt quizen hvis alle spørsmålene er besvart
         currentQuestionIndex++;
@@ -134,11 +145,18 @@ public class QuizActivity extends AppCompatActivity {
         }
     }
 
-    private void setScoreTextView(int score, int totalQuestions) {
+
+
+    private void setScoreTextView(Integer score, Integer totalQuestions) {
         // Oppdater poengsummen
-        String updatedScore = "Score: " + score + " of " + (totalQuestions);
-        scoreTextView.setText(updatedScore);
+        if (score == null || totalQuestions == null) {
+            scoreTextView.setText(getString(R.string.yourScore, 0, 0));
+        } else {
+            String updatedScore = getString(R.string.yourScore, score, totalQuestions);
+            scoreTextView.setText(updatedScore);
+        }
     }
+
 
     private void finishQuiz() {
         // Når en bruker har gått igjennom alle bildene vil du få en pop-up boks som sier hvordan brukeren gjorde det i quizen
@@ -151,4 +169,16 @@ public class QuizActivity extends AppCompatActivity {
         builder.setCancelable(false);
         builder.show();
     }
+
+    // Metode for å klikke på første svaralternativ i quizen
+    public void clickFirstAnswer() {
+        findViewById(R.id.button1).performClick();
+    }
+
+    // Metode for å hente teksten til poengsummen
+    public String getScoreText() {
+        TextView scoreTextView = findViewById(R.id.scoreText);
+        return scoreTextView.getText().toString();
+    }
+
 }
