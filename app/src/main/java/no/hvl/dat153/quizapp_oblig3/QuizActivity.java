@@ -2,8 +2,6 @@ package no.hvl.dat153.quizapp_oblig3;
 
 import android.content.res.Configuration;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -11,7 +9,6 @@ import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -166,9 +163,7 @@ public class QuizActivity extends AppCompatActivity {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Quiz Finished");
         builder.setMessage("Your score: " + score + " of " + currentQuestionIndex);
-        builder.setPositiveButton("OK", (dialog, which) -> {
-            finish();
-        });
+        builder.setPositiveButton("OK", (dialog, which) -> finish());
         builder.setCancelable(false);
         builder.show();
     }

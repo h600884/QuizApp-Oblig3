@@ -76,9 +76,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHol
                         listener.onItemClick(imageEntity);
                     }
                 })
-                .setNegativeButton("Cancel", (dialog, id) -> {
-                    dialog.dismiss();
-                });
+                .setNegativeButton("Cancel", (dialog, id) -> dialog.dismiss());
         AlertDialog alertDialog = builder.create();
         alertDialog.show();
     }

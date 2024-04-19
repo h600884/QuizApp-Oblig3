@@ -40,7 +40,9 @@ public class GalleryActivityTest {
 
         ActivityScenario<GalleryActivity> scenario = activityScenarioRule.getScenario();
 
+
         scenario.onActivity(activity -> {
+
             if (!activity.getImageList().isEmpty()) {
 
                 int initialImageCount = activity.getImageList().size();

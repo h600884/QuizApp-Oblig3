@@ -37,6 +37,7 @@ public class ImageEntity {
         return imageUri;
     }
 
+    @NonNull
     @Override
     public String toString() {
         return "ImageEntity{" +
