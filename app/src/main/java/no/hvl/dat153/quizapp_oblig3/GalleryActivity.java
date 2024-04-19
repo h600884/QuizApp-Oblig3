@@ -16,11 +16,10 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -54,9 +53,10 @@ public class GalleryActivity extends AppCompatActivity {
         // Observer for å oppdatere imageList når databasen endres
         imageViewModel.getAllImages().observe(this, images -> {
             if (images != null) {
-                imageList.clear(); // Fjern eksisterende bilder fra imageList
-                imageList.addAll(images); // Legg til alle bildene fra databasen i imageList
-                imageAdapter.notifyDataSetChanged(); // Oppdater RecyclerView
+                Log.d("LiveDataObserver", "Images updated: " + images.size());
+                imageList.clear();
+                imageList.addAll(images);
+                imageAdapter.notifyDataSetChanged();
             }
         });
 
@@ -95,6 +95,7 @@ public class GalleryActivity extends AppCompatActivity {
                                 ImageEntity image = new ImageEntity(imageText, selectedImageUri);
                                 // Legg til bildet i galleriet
                                 imageViewModel.insert(image);
+                                Toast.makeText(GalleryActivity.this, imageText + " added to the gallery", Toast.LENGTH_SHORT).show();
                                 // Skjul bekreftelsesknappen etter at bildet er lagt til
                                 confirmButton.setVisibility(View.GONE);
                             } else {
@@ -130,6 +131,8 @@ public class GalleryActivity extends AppCompatActivity {
         sortUnalphabeticalButton.setOnClickListener(v -> {
             // Sorter bildene
             imageList.sort((o1, o2) -> o2.getImageDescription().compareToIgnoreCase(o1.getImageDescription()));
+            //Toast.makeText(this, "Number of images: " + getImageList(), Toast.LENGTH_SHORT).show();
+
             // Oppdater RecyclerView etter sorteringen
             imageAdapter.notifyDataSetChanged();
         });
@@ -141,69 +144,53 @@ public class GalleryActivity extends AppCompatActivity {
             imageList.remove(image);
             imageAdapter.notifyDataSetChanged();
         });
-
-
+    }
+    public List<ImageEntity> getImageList() {
+        return imageList;
     }
 
-    // Metode for å simulere klikk på bekreft-knappen
-    public void clickConfirmButton() {
-        Button confirmButton = findViewById(R.id.confirm_button);
-        confirmButton.performClick();
-    }
+    public void addImage(Uri imageUri, String description) {
+        // Opprett et bildeobjekt med beskrivelse og URI
+        ImageEntity image = new ImageEntity(description, imageUri);
 
-    // Metode for å sjekke om et bilde med gitt navn er slettet fra databasen
-    public boolean isImageDeleted(String imageName) {
-        // Implementer logikk for å sjekke om et bilde med gitt navn er slettet fra databasen
-        // For eksempel kan du søke etter bilde med gitt navn i databasen og sjekke om det ikke lenger eksisterer
-        return true; // Placeholder, bytt ut med faktisk logikk
-    }
+        // Observer for endringer i bildelisten
+        imageViewModel.getAllImages().observe(this, images -> {
+            // Oppdater imageList med de nye bildene
+            imageList.clear();
+            imageList.addAll(images);
 
-    // Metode for å sjekke om et bilde er lagt til i databasen
-    public boolean isImageAdded() {
-        // Implementer logikk for å sjekke om et bilde er lagt til i databasen
-        // For eksempel kan du søke etter bildet i databasen og sjekke om det eksisterer
-        return true; // Placeholder, bytt ut med faktisk logikk
-    }
+            // Logg den oppdaterte bildelisten
+            Log.d("GalleryActivity", "Updated image list: " + imageList);
+        });
 
-    // Metode for å klikke på "Legg til" knappen
-    public void clickAddButton() {
-        Button addButton = findViewById(R.id.addbutton);
-        addButton.performClick();
-    }
+        // Logg informasjon om bildet som legges til
+        Log.d("GalleryActivity", "Adding image with description: " + description + ", URI: " + imageUri);
+        Log.d("GalleryActivity", "Image list before adding: " + imageList);
 
-    // Metode for å klikke på et bilde med gitt navn
-    public void clickOnImage(String imageName) {
-        RecyclerView recyclerView = findViewById(R.id.recycler_view_gallery);
-        RecyclerView.Adapter adapter = recyclerView.getAdapter();
-        if (adapter != null) {
-            for (int i = 0; i < adapter.getItemCount(); i++) {
-                View itemView = recyclerView.getChildAt(i);
-                TextView textViewName = itemView.findViewById(R.id.textViewName);
-                if (textViewName != null && textViewName.getText().toString().equals(imageName)) {
-                    itemView.performClick();
-                    break;
-                }
-            }
-        }
-    }
+        // Legg til bildet i galleriet
+        imageViewModel.insert(image);
 
-    // Metode for å klikke på galleriknappen
-    public void clickGalleryButton() {
-        View galleryButton = findViewById(R.id.gallery_button);
-        if (galleryButton != null) {
-            galleryButton.performClick();
-        } else {
-            Log.e("GalleryActivity", "Gallery button not found");
-        }
+        Log.d("GalleryActivity", "Image list after adding: " + imageList);
     }
 
 
-    // Metode for å sjekke om GalleryActivity har startet
-    public boolean isGalleryActivityStarted() {
-        Intent galleryIntent = new Intent(this, GalleryActivity.class);
-        PackageManager pm = getPackageManager();
-        List<ResolveInfo> activities = pm.queryIntentActivities(galleryIntent, 0);
-        return !activities.isEmpty();
+
+    public void deleteImage(ImageEntity image) {
+        Log.d("GalleryActivity", "Attempting to delete image: " + image.getImageDescription());
+
+        // Slett bildet fra databasen
+        imageViewModel.deleteWithId(image.getId());
+
+        // Logg antall bilder før og etter sletting
+        Log.d("GalleryActivity", "Image list before deletion: " + imageList);
+        int numImagesBeforeDelete = imageList.size();
+        imageList.remove(image);
+        int numImagesAfterDelete = imageList.size();
+        Log.d("GalleryActivity", "Image list after deletion: " + imageList);
+        Log.d("GalleryActivity", "Number of images before deletion: " + numImagesBeforeDelete);
+        Log.d("GalleryActivity", "Number of images after deletion: " + numImagesAfterDelete);
     }
+
+
 
 }

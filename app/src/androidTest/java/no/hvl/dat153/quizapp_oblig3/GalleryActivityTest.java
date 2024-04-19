@@ -1,14 +1,9 @@
 package no.hvl.dat153.quizapp_oblig3;
 
-import static androidx.test.espresso.intent.Intents.intending;
-import static androidx.test.espresso.intent.matcher.IntentMatchers.hasAction;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
 
-import android.app.Activity;
-import android.app.Instrumentation;
-import android.content.Intent;
+import android.content.Context;
 import android.net.Uri;
-import android.util.Log;
 
 import androidx.test.core.app.ActivityScenario;
 import androidx.test.core.app.ApplicationProvider;
@@ -21,10 +16,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 @RunWith(AndroidJUnit4.class)
 public class GalleryActivityTest {
@@ -43,36 +34,53 @@ public class GalleryActivityTest {
     }
 
     @Test
-    public void deletingImageIsRemovedFromDb() {
-        activityScenarioRule.getScenario().onActivity(activity -> {
-            activity.clickGalleryButton();
-            assertTrue(activity.isGalleryActivityStarted());
-            activity.clickOnImage("Tree");
-            assertTrue(activity.isImageDeleted("Tree"));
+    public void testImageAdded() {
+        // Hent konteksten fra InstrumentationRegistry
+        Context context = ApplicationProvider.getApplicationContext();
+
+        ActivityScenario<GalleryActivity> scenario = activityScenarioRule.getScenario();
+
+        scenario.onActivity(activity -> {
+            if (!activity.getImageList().isEmpty()) {
+
+                int initialImageCount = activity.getImageList().size();
+
+                // Hent URI til bildet fra drawable-mappen
+                Uri imageUri = Uri.parse("android.resource://" + context.getPackageName() + "/" + R.drawable.giraffe);
+
+                // Simuler legge til et bilde
+                String description = "Giraffe";
+                activity.addImage(imageUri, description);
+
+                int finalImageCount = activity.getImageList().size();
+
+                // Verifiser at antall bilder har økt med 1
+                assertEquals(initialImageCount + 1, finalImageCount);
+            }
         });
     }
 
+
     @Test
-    public void testAddingImageToDb() {
-        // Kjører GalleryActivity
+    public void testImageDeleted() {
         ActivityScenario<GalleryActivity> scenario = activityScenarioRule.getScenario();
 
-        // Lager en AtomicBoolean for å sjekke om bildet er lagt til
-        AtomicBoolean isImageAdded = new AtomicBoolean(false);
-
-        // Henter aktivitetsobjektet og utfører handlinger
         scenario.onActivity(activity -> {
-            // Klikker på legg til bilde-knappen
-            activity.clickAddButton();
+            // Hvis det er bilder i galleriet
+            if (!activity.getImageList().isEmpty()) {
+                // Lagre antall bilder før slettingen
+                int initialImageCount = activity.getImageList().size();
 
-            // Klikker på bekreft-knappen
-            activity.clickConfirmButton();
+                // Simuler at et bilde slettes
+                ImageEntity imageToDelete = activity.getImageList().get(0); // Slett det første bildet for testformål
+                activity.deleteImage(imageToDelete);
 
-            // Sjekker om bildet er lagt til
-            isImageAdded.set(activity.isImageAdded());
+                // Lagre antall bilder etter slettingen
+                int finalImageCount = activity.getImageList().size();
+
+                // Verifiser at antall bilder har blitt redusert med 1
+                assertEquals(initialImageCount - 1, finalImageCount);
+            }
         });
-
-        // Sjekker om bildet ble lagt til i databasen
-        assertTrue("Image should be added to database", isImageAdded.get());
     }
 }
