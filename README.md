@@ -26,7 +26,7 @@ Testing deleting an image from the gallery:
 
 Testing adding an image to the gallery:
 - If you add an image and the image has a description it should be added to the database and appear in the gallery. This is expected to  pass. 
-<img width="680" alt="Skjermbilde 2024-04-19 kl  14 11 36" src="https://github.com/h600884/QuizApp-Oblig3/assets/89258811/90a22fb8-9493-4e91-a217-a0464cad8560">
+<img width="639" alt="Skjermbilde 2024-04-23 kl  12 55 27" src="https://github.com/h600884/QuizApp-Oblig3/assets/89258811/4670456b-ce55-4d04-ae92-9a0db49a1896">
 
 
 
