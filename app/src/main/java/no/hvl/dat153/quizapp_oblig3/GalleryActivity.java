@@ -16,6 +16,7 @@ import android.widget.Toast;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -40,6 +41,7 @@ public class GalleryActivity extends AppCompatActivity {
         } else {
             setContentView(R.layout.activity_gallery);
         }
+
         // Initialiser RecyclerView
         RecyclerView recyclerView = findViewById(R.id.recycler_view_gallery);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -145,48 +147,7 @@ public class GalleryActivity extends AppCompatActivity {
         return imageList;
     }
 
-    public void addImage(Uri imageUri, String description) {
-        // Opprett et bildeobjekt med beskrivelse og URI
-        ImageEntity image = new ImageEntity(description, imageUri);
-
-        // Observer for endringer i bildelisten
-        imageViewModel.getAllImages().observe(this, images -> {
-            // Oppdater imageList med de nye bildene
-            imageList.clear();
-            imageList.addAll(images);
-
-            // Logg den oppdaterte bildelisten
-            Log.d("GalleryActivity", "Updated image list: " + imageList);
-        });
-
-        // Logg informasjon om bildet som legges til
-        Log.d("GalleryActivity", "Adding image with description: " + description + ", URI: " + imageUri);
-        Log.d("GalleryActivity", "Image list before adding: " + imageList);
-
-        // Legg til bildet i galleriet
-        imageViewModel.insert(image);
-
-        Log.d("GalleryActivity", "Image list after adding: " + imageList);
+    public LiveData<List<ImageEntity>> getAllQuizImages() {
+        return imageViewModel.getAllImages();
     }
-
-
-
-    public void deleteImage(ImageEntity image) {
-        Log.d("GalleryActivity", "Attempting to delete image: " + image.getImageDescription());
-
-        // Slett bildet fra databasen
-        imageViewModel.deleteWithId(image.getId());
-
-        // Logg antall bilder før og etter sletting
-        Log.d("GalleryActivity", "Image list before deletion: " + imageList);
-        int numImagesBeforeDelete = imageList.size();
-        imageList.remove(image);
-        int numImagesAfterDelete = imageList.size();
-        Log.d("GalleryActivity", "Image list after deletion: " + imageList);
-        Log.d("GalleryActivity", "Number of images before deletion: " + numImagesBeforeDelete);
-        Log.d("GalleryActivity", "Number of images after deletion: " + numImagesAfterDelete);
-    }
-
-
-
 }

@@ -63,13 +63,4 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-
-    // Metode for å sjekke om GalleryActivity har startet
-    public boolean isGalleryActivityStarted() {
-        Intent galleryIntent = new Intent(this, GalleryActivity.class);
-        PackageManager pm = getPackageManager();
-        List<ResolveInfo> activities = pm.queryIntentActivities(galleryIntent, 0);
-        return !activities.isEmpty();
-    }
-
 }

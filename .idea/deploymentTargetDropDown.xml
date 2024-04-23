@@ -5,19 +5,19 @@
       <entry key="GalleryActivityTest">
         <State />
       </entry>
-      <entry key="Tests in 'no.hvl.dat153.quizapp_oblig3'">
+      <entry key="MainActivityTest">
         <State />
       </entry>
       <entry key="app">
         <State />
       </entry>
-      <entry key="deletingImageIsRemovedFromDb()">
-        <State />
-      </entry>
-      <entry key="testAddingImageToDb()">
+      <entry key="galleryButtonOpensGalleryActivity()">
         <State />
       </entry>
       <entry key="testImageAdded()">
+        <State />
+      </entry>
+      <entry key="testImageDeleted()">
         <State />
       </entry>
     </value>

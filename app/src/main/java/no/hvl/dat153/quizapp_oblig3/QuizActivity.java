@@ -90,13 +90,10 @@ public class QuizActivity extends AppCompatActivity {
         List<String> options = new ArrayList<>();
         options.add(currentImage.getImageDescription());
 
-        // Kopierer og shuffler imageList for å sikre tilfeldighet
-        List<ImageEntity> shuffledList = new ArrayList<>(imageList);
-        Collections.shuffle(shuffledList);
 
         // Lager en liste av unike svar, eksludert det nåværende bilde
         List<String> otherDescriptions = new ArrayList<>();
-        for (ImageEntity image : shuffledList) {
+        for (ImageEntity image : imageList) {
             if (!image.getImageDescription().equals(currentImage.getImageDescription())) {
                 otherDescriptions.add(image.getImageDescription());
             }
@@ -150,13 +147,10 @@ public class QuizActivity extends AppCompatActivity {
     private void setScoreTextView(Integer score, Integer totalQuestions) {
         // Sjekk om imageList er initialisert og har data
         if (imageList != null && !imageList.isEmpty() && score != null && totalQuestions != null) {
-            // Use imageList.size() as the total number of questions
             String updatedScore = getString(R.string.yourScore, score, imageList.size());
             scoreTextView.setText(updatedScore);
         }
     }
-
-
 
     private void finishQuiz() {
         // Når en bruker har gått igjennom alle bildene vil du få en pop-up boks som sier hvordan brukeren gjorde det i quizen
