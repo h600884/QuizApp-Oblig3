@@ -12,6 +12,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.junit.Assert.assertEquals;
+import org.junit.FixMethodOrder;
 
 import android.app.Activity;
 import android.app.Instrumentation;
@@ -21,53 +22,40 @@ import android.net.Uri;
 
 import androidx.test.core.app.ActivityScenario;
 import androidx.test.espresso.intent.Intents;
-import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
+import androidx.test.filters.LargeTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.MethodSorters;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
+@LargeTest
 @RunWith(AndroidJUnit4.class)
 public class GalleryActivityTest {
 
-    @Rule
-    public ActivityScenarioRule<GalleryActivity> activityScenarioRule = new ActivityScenarioRule<>(GalleryActivity.class);
-
-    @Before
-    public void setUp() {
-        Intents.init();
-    }
-
-    @After
-    public void tearDown() {
-        Intents.release();
-    }
+    public ActivityScenario<GalleryActivity> activityScenario;
 
     @Test
     public void testImageAdded() {
-        ActivityScenario<GalleryActivity> scenario = activityScenarioRule.getScenario();
+
+        Intents.init();
+
+        activityScenario = ActivityScenario.launch(GalleryActivity.class);
 
         AtomicInteger atomicBefore = new AtomicInteger(-1);
-        AtomicInteger atomicAfter = new AtomicInteger(-1);
 
-        scenario.onActivity(activity -> {
+        activityScenario.onActivity(activity -> {
             // Observer LiveData for å få antall bilder før handlingen
             activity.getAllQuizImages().observe(activity, quizImages -> atomicBefore.set(quizImages.size()));
+        });
 
+        int before = atomicBefore.get();
 
-            // Kjører handlingene i en bakgrunnstråd
-            ExecutorService executor = Executors.newSingleThreadExecutor();
-            executor.execute(() -> {
-                try {
-                    // Gjennomfører handlingen for å legge til et bilde
+                // Gjennomfører handlingen for å legge til et bilde
                     onView(withId(R.id.addbutton)).perform(click());
 
                     // Simulerer valg av bilde fra galleriet
@@ -83,59 +71,61 @@ public class GalleryActivityTest {
                     onView(withId(R.id.textinput)).perform(replaceText("Giraffe"));
                     onView(withId(R.id.confirm_button)).perform(click());
 
-                    // Observer LiveData for å få antall bilder etter handlingen
-                    activity.getAllQuizImages().observe(activity, quizImages -> {
-                        atomicAfter.set(quizImages.size());
-                        assertEquals(atomicBefore.get() + 1, atomicAfter.get());
-                    });
-                } catch (Throwable throwable) {
-                    throwable.printStackTrace();
-                }
-            });
-            // Stopp executor etter at testen er fullført
-            executor.shutdown();
+                    AtomicInteger atomicAfter = new AtomicInteger(-1);
+
+
+        activityScenario.onActivity(activity -> {
+            // Observer LiveData for å få antall bilder etter handlingen
+                activity.getAllQuizImages().observe(activity, quizImages -> atomicAfter.set(quizImages.size()));
         });
+        int after = atomicAfter.get();
+
+        Intents.release();
+
+        assertEquals(before + 1, after);
     }
 
   @Test
   public void testImageDeleted() {
 
-      ActivityScenario<GalleryActivity> scenario = activityScenarioRule.getScenario();
+      Intents.init();
+
+      activityScenario = ActivityScenario.launch(GalleryActivity.class);
 
       AtomicInteger atomicBefore = new AtomicInteger(-1);
-      AtomicInteger atomicAfter = new AtomicInteger(-1);
 
-      scenario.onActivity(activity -> {
+      activityScenario.onActivity(activity -> {
           activity.getAllQuizImages().observe(activity, quizImages -> atomicBefore.set(quizImages.size()));
-
-          ExecutorService executor = Executors.newSingleThreadExecutor();
-          executor.execute(() -> {
-              try {
-                  // Klikk på det første bildet i RecyclerView for å utløse bekreftelsesdialogen
-                  onView(withId(R.id.recycler_view_gallery))
-                          .perform(actionOnItemAtPosition(0, click()));
-
-                  // Forventer at dialogen vises
-                  onView(withText("Are you sure you want to delete this image?"))
-                          .inRoot(isDialog())
-                          .check(matches(isDisplayed()));
-
-                  // Klikk på bekreftelsesknappen ("Delete") i dialogen
-                  onView(withText("Delete"))
-                          .inRoot(isDialog())
-                          .check(matches(isDisplayed()))
-                          .perform(click());
-
-                  // Observer LiveData for å få antall bilder etter handlingen
-                  activity.getAllQuizImages().observe(activity, quizImages -> {
-                      atomicAfter.set(quizImages.size());
-                      assertEquals(atomicBefore.get() + 1, atomicAfter.get());
-                  });
-              } catch (Throwable throwable) {
-                  throwable.printStackTrace();
-              }
-          });
-          executor.shutdown();
       });
+
+      int before = atomicBefore.get();
+
+      // Klikk på det første bildet i RecyclerView for å utløse bekreftelsesdialogen
+              onView(withId(R.id.recycler_view_gallery))
+                      .perform(actionOnItemAtPosition(0, click()));
+
+              // Forventer at dialogen vises
+              onView(withText("Are you sure you want to delete this image?"))
+                      .inRoot(isDialog())
+                      .check(matches(isDisplayed()));
+
+              // Klikk på bekreftelsesknappen ("Delete") i dialogen
+              onView(withText("Delete"))
+                      .inRoot(isDialog())
+                      .check(matches(isDisplayed()))
+                      .perform(click());
+
+                AtomicInteger atomicAfter = new AtomicInteger(-1);
+
+      activityScenario.onActivity(activity -> {
+          // Observer LiveData for å få antall bilder etter handlingen
+          activity.getAllQuizImages().observe(activity, quizImages -> atomicAfter.set(quizImages.size()));
+      });
+
+      int after = atomicAfter.get();
+
+      Intents.release();
+
+      assertEquals(before - 1, after);
   }
 }
