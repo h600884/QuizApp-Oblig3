@@ -2,12 +2,14 @@ package no.hvl.dat153.quizapp_oblig3;
 
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProvider;
 
 import java.util.ArrayList;
@@ -24,6 +26,7 @@ public class QuizActivity extends AppCompatActivity {
     private List<ImageEntity> imageList;
     private int currentQuestionIndex;
     private int score;
+    private String correctAnswer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,31 +52,20 @@ public class QuizActivity extends AppCompatActivity {
             imageList = images;
 
             // Gjør at bildene kommer i tilfeldig rekkefølge
-            shuffleImageList();
+            Collections.shuffle(imageList);
 
             // Sett opp første spørsmål når bildene er lastet
             currentQuestionIndex = 0;
             setQuestion();
 
             if (imageList != null) {
-                setScoreTextView(0, imageList.size());
+                setScoreTextView(0, currentQuestionIndex);
             }
         });
-
         // Lyttere for valgknapper
         option1Button.setOnClickListener(v -> checkAnswer(option1Button.getText().toString()));
-
         option2Button.setOnClickListener(v -> checkAnswer(option2Button.getText().toString()));
-
         option3Button.setOnClickListener(v -> checkAnswer(option3Button.getText().toString()));
-
-    }
-
-    private void shuffleImageList() {
-        // Sjekker at listen ikke er tom, dersom den inneholder bilder blir de shufflet
-        if (imageList != null && !imageList.isEmpty()) {
-            Collections.shuffle(imageList);
-        }
     }
 
     private void setQuestion() {
@@ -81,29 +73,25 @@ public class QuizActivity extends AppCompatActivity {
         if (imageList == null || imageList.isEmpty()) {
             return;
         }
-
         // Vis bildet for nåværende spørsmål
         ImageEntity currentImage = imageList.get(currentQuestionIndex);
         quizImageView.setImageURI(currentImage.getImageUri());
 
         // Lager en liste av alternativer, starter med det riktige svaret
         List<String> options = new ArrayList<>();
+        correctAnswer = currentImage.getImageDescription();
         options.add(currentImage.getImageDescription());
 
-
-        // Lager en liste av unike svar, eksludert det nåværende bilde
-        List<String> otherDescriptions = new ArrayList<>();
+        // Legg til de to første alternativene som IKKE er riktig svar.
+        // break når det er lagt til 2 andre alternativer
+        int addedDescriptions = 0;
         for (ImageEntity image : imageList) {
             if (!image.getImageDescription().equals(currentImage.getImageDescription())) {
-                otherDescriptions.add(image.getImageDescription());
+                options.add(image.getImageDescription());
+                addedDescriptions++;
             }
+            if (addedDescriptions == 2) { break; }
         }
-
-        // Shuffler listen av andre beksrivelser og velger de to første som tilfeldige svar
-        Collections.shuffle(otherDescriptions);
-        options.add(otherDescriptions.get(0));
-        options.add(otherDescriptions.get(1));
-
         // Shuffler endelige listen med alternativer for å tilfeldiggjøre rekkefølgen
         Collections.shuffle(options);
 
@@ -131,11 +119,13 @@ public class QuizActivity extends AppCompatActivity {
         }
         Toast.makeText(this, feedback, Toast.LENGTH_SHORT).show();
 
+        currentQuestionIndex++;
+
         // Oppdater poengsummen
-        setScoreTextView(score, imageList.size());
+        setScoreTextView(score, currentQuestionIndex);
 
         // Gå til neste spørsmål eller avslutt quizen hvis alle spørsmålene er besvart
-        currentQuestionIndex++;
+
         if (currentQuestionIndex < imageList.size()) {
             setQuestion();
         } else {
@@ -144,11 +134,11 @@ public class QuizActivity extends AppCompatActivity {
         }
     }
 
-    private void setScoreTextView(Integer score, Integer totalQuestions) {
+    private void setScoreTextView(Integer score, Integer currentQuestionIndex) {
         // Sjekk om imageList er initialisert og har data
-        if (imageList != null && !imageList.isEmpty() && score != null && totalQuestions != null) {
-            String updatedScore = getString(R.string.yourScore, score, imageList.size());
-            scoreTextView.setText(updatedScore);
+        if (imageList != null && !imageList.isEmpty() && score != null && currentQuestionIndex != null) {
+            String scoreText = "Score: " + score + " of " + currentQuestionIndex;
+            scoreTextView.setText(scoreText);
         }
     }
 
@@ -162,14 +152,19 @@ public class QuizActivity extends AppCompatActivity {
         builder.show();
     }
 
-    // Metode for å klikke på første svaralternativ i quizen
-    public void clickFirstAnswer() {
-        findViewById(R.id.button1).performClick();
-    }
+    public int getCorrectButton() {
+        if (correctAnswer == null) {
+            Log.e("QuizActivity", "Correct answer is not initialized yet.");
+            return -1;
+        }
 
-    // Metode for å hente teksten til poengsummen
-    public String getScoreText() {
-        TextView scoreTextView = findViewById(R.id.scoreText);
-        return scoreTextView.getText().toString();
-    }
-}
+        if (correctAnswer.equals(option1Button.getText().toString())) {
+            return R.id.button1;
+        } else if (correctAnswer.equals(option2Button.getText().toString())) {
+            return R.id.button2;
+        } else if (correctAnswer.equals(option3Button.getText().toString())) {
+            return R.id.button3;
+        }
+
+        return -1;
+    }}
