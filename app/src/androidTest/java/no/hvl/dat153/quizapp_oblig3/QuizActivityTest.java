@@ -49,11 +49,10 @@ import java.util.concurrent.atomic.AtomicReference;
 public class QuizActivityTest {
 
     @Rule
-    public ActivityScenarioRule<QuizActivity> activityScenarioRule = new ActivityScenarioRule<>(QuizActivity.class);
-
+    public ActivityScenarioRule<MainActivity> activityScenarioRule = new ActivityScenarioRule<>(MainActivity.class);
     @Before
-    public void setUp() {
-        Intents.init();
+    public void launchQuizActivity() {
+        onView(withId(R.id.quiz_button)).perform(click());
     }
 
     @After
@@ -62,59 +61,28 @@ public class QuizActivityTest {
     }
 
     @Test
-    public void testQuizActivity() {
-        Intent Quizintent = new Intent(InstrumentationRegistry.getInstrumentation().getTargetContext(), QuizActivity.class);
-        ActivityScenario<QuizActivity> QuizActivityScenario = ActivityScenario.launch(Quizintent);
-
-        onView(isRoot()).perform(waitFor(500)); // Custom method to wait for 500 milliseconds
-
-        final int[] correctNameButton = new int[1];
-        QuizActivityScenario.onActivity(activity -> {
-            correctNameButton[0] = activity.getCorrectButton();
+    public void testCorrectAnswerAndScore() {
+        final int[] correctIdButton = new int[1];
+        ActivityScenario<QuizActivity> quizActivityScenario = ActivityScenario.launch(QuizActivity.class);
+        quizActivityScenario.onActivity(activity -> {
+            correctIdButton[0] = activity.getCorrectButton();
         });
 
-        if (correctNameButton[0] == R.id.button1) {
-            onView(withId(R.id.button1)).perform(click());
-        } else if (correctNameButton[0] == R.id.button2) {
-            onView(withId(R.id.button2)).perform(click());
-        } else if (correctNameButton[0] == R.id.button3) {
-            onView(withId(R.id.button3)).perform(click());
-        } else {
-            Log.i("Error", "No correct button ID found");
-        }
-
+        // Click the correct button
+        onView(withId(correctIdButton[0])).perform(click());
         onView(withId(R.id.scoreText)).check(matches(withText("Score: 1 of 1")));
 
-        QuizActivityScenario.onActivity(activity -> {
-            correctNameButton[0] = activity.getCorrectButton();
+        // Assuming the activity stays the same and doesn't reset or recreate
+        quizActivityScenario.onActivity(activity -> {
+            correctIdButton[0] = activity.getCorrectButton();  // Get new correct button
         });
 
-        if (correctNameButton[0] == R.id.button1) {
-            onView(withId(R.id.button2)).perform(click());
-        } else if (correctNameButton[0] == R.id.button2) {
-            onView(withId(R.id.button3)).perform(click());
-        } else {
-            onView(withId(R.id.button1)).perform(click());
-        }
+        // Click an incorrect button
+        int incorrectButtonId = correctIdButton[0] == R.id.button1 ? R.id.button2 : R.id.button1;
+        onView(withId(incorrectButtonId)).perform(click());
         onView(withId(R.id.scoreText)).check(matches(withText("Score: 1 of 2")));
 
-        QuizActivityScenario.close();
+        quizActivityScenario.close();
     }
 
-    public static ViewAction waitFor(final long millis) {
-        return new ViewAction() {
-            @Override
-            public Matcher<View> getConstraints() {
-                return isRoot();
-            }
-            @Override
-            public String getDescription() {
-                return "wait for " + millis + " milliseconds";
-            }
-            @Override
-            public void perform(UiController uiController, View view) {
-                uiController.loopMainThreadForAtLeast(millis);
-            }
-        };
-    }
 }
